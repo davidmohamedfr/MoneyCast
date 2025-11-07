@@ -3,6 +3,8 @@ import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileCo
 import { edit } from '@/routes/profile';
 import { send } from '@/routes/verification';
 import { Form, Head, Link, usePage } from '@inertiajs/vue3';
+import { toTypedSchema } from '@vee-validate/zod';
+import { useField, useForm } from 'vee-validate';
 
 import DeleteUser from '@/components/DeleteUser.vue';
 import HeadingSmall from '@/components/HeadingSmall.vue';
@@ -12,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/AppLayout.vue';
 import SettingsLayout from '@/layouts/settings/Layout.vue';
+import { profileUpdateSchema } from '@/lib/validation';
 import { type BreadcrumbItem } from '@/types';
 
 interface Props {
@@ -30,6 +33,19 @@ const breadcrumbItems: BreadcrumbItem[] = [
 
 const page = usePage();
 const user = page.props.auth.user;
+
+// VeeValidate form setup
+const { errors: clientErrors } = useForm({
+    validationSchema: toTypedSchema(profileUpdateSchema),
+});
+
+const { value: nameValue, errorMessage: nameError } = useField<string>('name', undefined, {
+    initialValue: user.name,
+});
+
+const { value: emailValue, errorMessage: emailError } = useField<string>('email', undefined, {
+    initialValue: user.email,
+});
 </script>
 
 <template>
@@ -52,29 +68,31 @@ const user = page.props.auth.user;
                         <Label for="name">Name</Label>
                         <Input
                             id="name"
+                            v-model="nameValue"
                             class="mt-1 block w-full"
                             name="name"
-                            :default-value="user.name"
                             required
                             autocomplete="name"
                             placeholder="Full name"
+                            :aria-invalid="!!(nameError || errors.name)"
                         />
-                        <InputError class="mt-2" :message="errors.name" />
+                        <InputError class="mt-2" :message="nameError || errors.name" />
                     </div>
 
                     <div class="grid gap-2">
                         <Label for="email">Email address</Label>
                         <Input
                             id="email"
+                            v-model="emailValue"
                             type="email"
                             class="mt-1 block w-full"
                             name="email"
-                            :default-value="user.email"
                             required
                             autocomplete="username"
                             placeholder="Email address"
+                            :aria-invalid="!!(emailError || errors.email)"
                         />
-                        <InputError class="mt-2" :message="errors.email" />
+                        <InputError class="mt-2" :message="emailError || errors.email" />
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">

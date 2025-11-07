@@ -18,9 +18,12 @@ import {
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
 import { confirm } from '@/routes/two-factor';
 import { Form } from '@inertiajs/vue3';
+import { toTypedSchema } from '@vee-validate/zod';
 import { useClipboard } from '@vueuse/core';
+import { useField, useForm } from 'vee-validate';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
+import { twoFactorCodeSchema } from '@/lib/validation';
 
 interface Props {
     requiresConfirmation: boolean;
@@ -39,6 +42,15 @@ const code = ref<number[]>([]);
 const codeValue = computed<string>(() => code.value.join(''));
 
 const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
+
+// VeeValidate form setup for 2FA code
+const { errors: clientErrors } = useForm({
+    validationSchema: toTypedSchema(twoFactorCodeSchema),
+});
+
+const { errorMessage: codeError } = useField<string>('code', undefined, {
+    syncVModel: false,
+});
 
 const modalConfig = computed<{
     title: string;
@@ -265,6 +277,7 @@ watch(
                                 </PinInput>
                                 <InputError
                                     :message="
+                                        codeError ||
                                         errors?.confirmTwoFactorAuthentication
                                             ?.code
                                     "
