@@ -1,15 +1,17 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Head, Link } from '@inertiajs/vue3'
 import type { AccountWithBalance } from '@/types/account'
 import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
 import { Button } from '@/components/ui/button'
 import AccountCard from '@/components/account/AccountCard.vue'
-import { computed } from 'vue'
 
-const props = defineProps<{
+interface PageProps {
   accounts: AccountWithBalance[]
-}>()
+}
+
+const props = defineProps<PageProps>()
 
 const totalCurrentBalance = computed(() => {
   return props.accounts.reduce((sum, acc) => sum + acc.current_balance, 0)
@@ -19,11 +21,15 @@ const totalProjectedBalance = computed(() => {
   return props.accounts.reduce((sum, acc) => sum + acc.projected_balance, 0)
 })
 
-const formatCurrency = (amount: number) => {
+const currencyFormatter = computed(() => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'EUR',
-  }).format(amount)
+  })
+})
+
+const formatCurrency = (amount: number) => {
+  return currencyFormatter.value.format(amount)
 }
 </script>
 

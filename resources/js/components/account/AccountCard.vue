@@ -19,11 +19,15 @@ const accountTypeLabel = computed(() => {
   return types[props.accountData.account.type] || props.accountData.account.type
 })
 
-const formatCurrency = (amount: number) => {
+const currencyFormatter = computed(() => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: props.accountData.account.currency,
-  }).format(amount)
+  })
+})
+
+const formatCurrency = (amount: number) => {
+  return currencyFormatter.value.format(amount)
 }
 
 const balanceDifference = computed(() => {
