@@ -51,10 +51,10 @@ class AccountController extends Controller
 
     public function store(StoreAccountRequest $request): RedirectResponse
     {
-        $data = AccountData::from([
-            ...$request->validated(),
-            'user_id' => auth()->id(),
-        ]);
+        $validated = $request->validated();
+        $validated['user_id'] = auth()->id();
+
+        $data = AccountData::from($validated);
 
         $this->createAction->execute($data);
 
