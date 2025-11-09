@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Head, Link, router } from '@inertiajs/vue3'
 import type { Account } from '@/types/account'
 import AppLayout from '@/layouts/AppLayout.vue'
@@ -7,17 +8,23 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 
-const props = defineProps<{
+interface PageProps {
   account: Account
   current_balance: number
   projected_balance: number
-}>()
+}
 
-const formatCurrency = (amount: number) => {
+const props = defineProps<PageProps>()
+
+const currencyFormatter = computed(() => {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: props.account.currency,
-  }).format(amount)
+  })
+})
+
+const formatCurrency = (amount: number) => {
+  return currencyFormatter.value.format(amount)
 }
 
 const deleteAccount = () => {

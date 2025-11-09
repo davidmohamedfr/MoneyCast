@@ -8,7 +8,7 @@ export const accountSchema = z.object({
   initial_balance: z
     .number({ required_error: 'Initial balance is required' })
     .min(0, 'Initial balance must be positive'),
-  currency: z.string().length(3).default('EUR').optional(),
+  currency: z.string().length(3, 'Currency must be 3 characters').default('EUR'),
 })
 
 export const accountUpdateSchema = z.object({
