@@ -6,6 +6,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
 import { Button } from '@/components/ui/button'
 import AccountCard from '@/components/account/AccountCard.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 interface PageProps {
   accounts: AccountWithBalance[]
@@ -62,13 +63,13 @@ const formatCurrency = (amount: number) => {
         </div>
       </div>
 
-      <div v-else class="flex flex-col items-center justify-center py-12 text-center">
-        <p class="text-lg text-muted-foreground mb-4">No accounts yet</p>
-        <p class="text-sm text-muted-foreground mb-6">Create your first account to get started</p>
-        <Link href="/accounts/create">
-          <Button>Create Account</Button>
-        </Link>
-      </div>
+      <EmptyState
+        v-else
+        title="No accounts yet"
+        description="Create your first account to get started"
+        action-label="Create Account"
+        action-href="/accounts/create"
+      />
     </div>
   </AppLayout>
 </template>

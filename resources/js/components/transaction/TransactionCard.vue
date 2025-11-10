@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
 import { router } from '@inertiajs/vue3'
 import type { Transaction } from '@/types/transaction'
 import {
@@ -12,6 +12,15 @@ import {
 } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 
 const props = defineProps<{
   transaction: Transaction
@@ -20,6 +29,8 @@ const props = defineProps<{
 const emit = defineEmits<{
   delete: [id: number]
 }>()
+
+const showDeleteDialog = ref(false)
 
 const formattedAmount = computed(() => {
   return new Intl.NumberFormat('en-US', {
@@ -53,10 +64,9 @@ const handleEdit = () => {
   router.visit(`/transactions/${props.transaction.id}/edit`)
 }
 
-const handleDelete = () => {
-  if (confirm('Are you sure you want to delete this transaction?')) {
-    emit('delete', props.transaction.id)
-  }
+const confirmDelete = () => {
+  emit('delete', props.transaction.id)
+  showDeleteDialog.value = false
 }
 </script>
 
@@ -107,9 +117,31 @@ const handleDelete = () => {
 
     <CardFooter class="flex justify-end gap-2">
       <Button variant="outline" size="sm" @click="handleEdit">Edit</Button>
-      <Button variant="destructive" size="sm" @click="handleDelete">
-        Delete
-      </Button>
+      <Dialog v-model:open="showDeleteDialog">
+        <DialogTrigger as-child>
+          <Button variant="destructive" size="sm">Delete</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Delete Transaction</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete this transaction? This action
+              cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              @click="showDeleteDialog = false"
+            >
+              Cancel
+            </Button>
+            <Button variant="destructive" @click="confirmDelete">
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </CardFooter>
   </Card>
 </template>

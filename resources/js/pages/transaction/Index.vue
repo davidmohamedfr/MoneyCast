@@ -5,6 +5,7 @@ import AppLayout from '@/layouts/AppLayout.vue'
 import Heading from '@/components/Heading.vue'
 import { Button } from '@/components/ui/button'
 import TransactionCard from '@/components/transaction/TransactionCard.vue'
+import EmptyState from '@/components/EmptyState.vue'
 
 interface PageProps {
   transactions: Transaction[]
@@ -29,16 +30,13 @@ const handleCreate = () => {
         <Button @click="handleCreate">Create Transaction</Button>
       </div>
 
-      <div
+      <EmptyState
         v-if="transactions.length === 0"
-        class="flex flex-col items-center justify-center rounded-lg border border-dashed p-8 text-center"
-      >
-        <p class="text-muted-foreground">No transactions yet</p>
-        <p class="text-sm text-muted-foreground">
-          Create your first transaction to get started
-        </p>
-        <Button class="mt-4" @click="handleCreate">Create Transaction</Button>
-      </div>
+        title="No transactions yet"
+        description="Create your first transaction to get started"
+        action-label="Create Transaction"
+        @action="handleCreate"
+      />
 
       <div v-else class="grid gap-4">
         <TransactionCard
