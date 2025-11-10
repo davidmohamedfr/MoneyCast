@@ -8,6 +8,7 @@ use App\Domain\Account\Actions\UpdateAccountAction;
 use App\Domain\Account\Data\AccountData;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Services\AccountService;
+use App\Domain\Transaction\Services\TransactionService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\StoreAccountRequest;
 use App\Http\Requests\Account\UpdateAccountRequest;
@@ -19,6 +20,7 @@ class AccountController extends Controller
 {
     public function __construct(
         private AccountService $accountService,
+        private TransactionService $transactionService,
         private CreateAccountAction $createAction,
         private UpdateAccountAction $updateAction,
         private DeleteAccountAction $deleteAction
@@ -27,9 +29,11 @@ class AccountController extends Controller
     public function index(): Response
     {
         $accounts = $this->accountService->getAccountsWithBalances(auth()->id());
+        $archivedAccounts = $this->accountService->getArchivedAccountsWithBalances(auth()->id());
 
         return Inertia::render('account/Index', [
             'accounts' => $accounts,
+            'archivedAccounts' => $archivedAccounts,
         ]);
     }
 
@@ -37,10 +41,32 @@ class AccountController extends Controller
     {
         $this->authorize('view', $account);
 
+        $filters = array_filter([
+            'payee' => request('payee'),
+            'amount_min' => request('amount_min'),
+            'amount_max' => request('amount_max'),
+            'category_id' => request('category_id'),
+            'start_date' => request('start_date'),
+            'end_date' => request('end_date'),
+        ]);
+
+        $transactions = $this->transactionService->getPaginatedTransactionsForAccount(
+            $account->id,
+            $filters,
+            20
+        );
+
+        $stats = $this->transactionService->calculateAccountStats($account->id);
+
         return Inertia::render('account/Show', [
             'account' => $account,
-            'current_balance' => $this->accountService->calculateCurrentBalance($account),
-            'projected_balance' => $this->accountService->calculateProjectedBalance($account),
+            'transactions' => $transactions,
+            'stats' => [
+                'total_income' => $stats['total_income'],
+                'total_expenses' => $stats['total_expenses'],
+                'current_balance' => $this->accountService->calculateCurrentBalance($account),
+            ],
+            'filters' => $filters,
         ]);
     }
 
@@ -88,6 +114,7 @@ class AccountController extends Controller
 
         try {
             $this->deleteAction->execute($account);
+
             return redirect()->route('accounts.index')
                 ->with('success', 'Account deleted successfully');
         } catch (\Exception $e) {

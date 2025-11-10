@@ -92,6 +92,7 @@ class TransactionController extends Controller
 
         try {
             $this->deleteAction->execute($transaction);
+
             return redirect()->route('transactions.index')
                 ->with('success', 'Transaction deleted successfully');
         } catch (\Exception $e) {

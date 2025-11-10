@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Account;
 
+use App\Domain\Account\Enums\AccountType;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UpdateAccountRequest extends FormRequest
 {
@@ -13,9 +15,21 @@ class UpdateAccountRequest extends FormRequest
 
     public function rules(): array
     {
+        $userId = auth()->id();
+        $accountId = $this->route('account')->id;
+
         return [
-            'name' => ['required', 'string', 'max:255'],
-            'type' => ['required', 'string', 'in:checking,savings,credit'],
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                Rule::unique('accounts', 'name')
+                    ->where('user_id', $userId)
+                    ->where('bank', $this->bank)
+                    ->ignore($accountId),
+            ],
+            'type' => ['required', Rule::enum(AccountType::class)],
+            'bank' => ['required', 'string', 'max:255'],
         ];
     }
 }
