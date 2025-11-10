@@ -4,6 +4,7 @@ namespace App\Domain\Transaction\Models;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
+use App\Domain\Transaction\Enums\TransactionType;
 use App\Models\User;
 use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -30,6 +31,7 @@ class Transaction extends Model
     protected $casts = [
         'amount' => 'decimal:4',
         'date' => 'date',
+        'type' => TransactionType::class,
     ];
 
     public function user(): BelongsTo

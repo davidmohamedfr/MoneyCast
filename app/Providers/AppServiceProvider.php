@@ -14,6 +14,7 @@ use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transaction\Policies\TransactionPolicy;
 use App\Domain\Transaction\Repositories\TransactionRepository;
 use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
+use App\Observers\AccountObserver;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
@@ -38,6 +39,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Account::class, AccountPolicy::class);
         Gate::policy(Transaction::class, TransactionPolicy::class);
+
+        // Register observers
+        Account::observe(AccountObserver::class);
 
         // Preserve float types (e.g., 0.0, 1500.0) in JSON encoding
         // This ensures that floats with zero decimals are not converted to integers in JSON responses
