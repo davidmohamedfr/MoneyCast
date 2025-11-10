@@ -4,10 +4,15 @@ namespace App\Domain\Account\Repositories;
 
 use App\Domain\Account\Data\AccountData;
 use App\Domain\Account\Models\Account;
+use App\Domain\Transaction\Services\TransactionService;
 use Illuminate\Database\Eloquent\Collection;
 
 class AccountRepository implements AccountRepositoryInterface
 {
+    public function __construct(
+        private TransactionService $transactionService
+    ) {}
+
     public function create(AccountData $data): Account
     {
         return Account::create([
@@ -46,7 +51,6 @@ class AccountRepository implements AccountRepositoryInterface
 
     public function hasTransactions(Account $account): bool
     {
-        // This will be implemented when Transaction domain is created
-        return false;
+        return $this->transactionService->hasTransactions($account->id);
     }
 }

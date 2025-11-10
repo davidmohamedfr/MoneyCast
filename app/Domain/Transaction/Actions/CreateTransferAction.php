@@ -1,0 +1,68 @@
+<?php
+
+namespace App\Domain\Transaction\Actions;
+
+use App\Domain\Transaction\Data\TransactionData;
+use App\Domain\Transaction\Models\Transaction;
+use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
+use Illuminate\Support\Facades\DB;
+
+class CreateTransferAction
+{
+    public function __construct(
+        private TransactionRepositoryInterface $repository
+    ) {}
+
+    public function execute(
+        int $fromAccountId,
+        int $toAccountId,
+        float $amount,
+        string $date,
+        int $userId,
+        ?string $description = null,
+        ?string $notes = null
+    ): array {
+        return DB::transaction(function () use ($fromAccountId, $toAccountId, $amount, $date, $userId, $description, $notes) {
+            // Create the outgoing transaction (from source account)
+            $outgoingData = new TransactionData(
+                account_id: $fromAccountId,
+                type: 'transfer',
+                amount: $amount,
+                payee: 'Transfer',
+                date: $date,
+                category_id: null,
+                description: $description,
+                notes: $notes,
+                related_transaction_id: null,
+                user_id: $userId
+            );
+
+            $outgoingTransaction = $this->repository->create($outgoingData);
+
+            // Create the incoming transaction (to destination account)
+            $incomingData = new TransactionData(
+                account_id: $toAccountId,
+                type: 'income',
+                amount: $amount,
+                payee: 'Transfer',
+                date: $date,
+                category_id: null,
+                description: $description,
+                notes: $notes,
+                related_transaction_id: $outgoingTransaction->id,
+                user_id: $userId
+            );
+
+            $incomingTransaction = $this->repository->create($incomingData);
+
+            // Update the outgoing transaction with the related transaction ID
+            $outgoingTransaction->related_transaction_id = $incomingTransaction->id;
+            $outgoingTransaction->save();
+
+            return [
+                'outgoing' => $outgoingTransaction,
+                'incoming' => $incomingTransaction,
+            ];
+        });
+    }
+}

@@ -4,11 +4,13 @@ namespace App\Domain\Account\Services;
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Repositories\AccountRepositoryInterface;
+use App\Domain\Transaction\Services\TransactionService;
 
 class AccountService
 {
     public function __construct(
-        private AccountRepositoryInterface $repository
+        private AccountRepositoryInterface $repository,
+        private TransactionService $transactionService
     ) {}
 
     public function getAccountsWithBalances(int $userId): array
@@ -26,15 +28,19 @@ class AccountService
 
     public function calculateCurrentBalance(Account $account): float
     {
-        // This will be fully implemented when Transaction domain is created
-        // For now, return initial balance
-        return (float) $account->initial_balance;
+        return $this->transactionService->calculateAccountBalance(
+            $account->id,
+            (float) $account->initial_balance,
+            now()->format('Y-m-d')
+        );
     }
 
     public function calculateProjectedBalance(Account $account): float
     {
-        // This will be fully implemented when Transaction domain is created
-        // For now, return initial balance
-        return (float) $account->initial_balance;
+        // Calculate balance including future-dated transactions (no date limit)
+        return $this->transactionService->calculateAccountBalance(
+            $account->id,
+            (float) $account->initial_balance
+        );
     }
 }
