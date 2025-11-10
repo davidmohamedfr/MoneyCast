@@ -71,11 +71,11 @@ class TransactionRepository implements TransactionRepositoryInterface
             }
 
             if (isset($filters['start_date'])) {
-                $query->where('date', '>=', $filters['start_date']);
+                $query->whereDate('date', '>=', $filters['start_date']);
             }
 
             if (isset($filters['end_date'])) {
-                $query->where('date', '<=', $filters['end_date']);
+                $query->whereDate('date', '<=', $filters['end_date']);
             }
         }
 
@@ -91,11 +91,11 @@ class TransactionRepository implements TransactionRepositoryInterface
 
         if ($filters) {
             if (isset($filters['start_date'])) {
-                $query->where('date', '>=', $filters['start_date']);
+                $query->whereDate('date', '>=', $filters['start_date']);
             }
 
             if (isset($filters['end_date'])) {
-                $query->where('date', '<=', $filters['end_date']);
+                $query->whereDate('date', '<=', $filters['end_date']);
             }
         }
 
@@ -105,10 +105,10 @@ class TransactionRepository implements TransactionRepositoryInterface
     public function getByDateRange(int $accountId, string $startDate, ?string $endDate = null): Collection
     {
         $query = Transaction::where('account_id', $accountId)
-            ->where('date', '>=', $startDate);
+            ->whereDate('date', '>=', $startDate);
 
         if ($endDate) {
-            $query->where('date', '<=', $endDate);
+            $query->whereDate('date', '<=', $endDate);
         }
 
         return $query->orderBy('date')->get();
