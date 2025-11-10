@@ -2,7 +2,6 @@
 
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Repositories\AccountRepositoryInterface;
-use App\Domain\Account\Services\AccountService;
 use App\Models\User;
 
 test('AccountRepository filters by user_id', function () {
@@ -16,7 +15,7 @@ test('AccountRepository filters by user_id', function () {
     $accounts = $repository->getAllForUser($user1->id);
 
     expect($accounts)->toHaveCount(3);
-    expect($accounts->every(fn($account) => $account->user_id === $user1->id))->toBeTrue();
+    expect($accounts->every(fn ($account) => $account->user_id === $user1->id))->toBeTrue();
 })->group('unit');
 
 test('AccountService calculates current balance correctly excluding future transactions', function () {

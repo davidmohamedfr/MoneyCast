@@ -13,6 +13,7 @@ test('user can create account with initial balance', function () {
         'name' => 'Checking Account',
         'initial_balance' => 1000.00,
         'type' => 'checking',
+        'bank' => 'Test Bank',
         'currency' => 'EUR',
     ]);
 
@@ -20,6 +21,7 @@ test('user can create account with initial balance', function () {
     $this->assertDatabaseHas('accounts', [
         'user_id' => $user->id,
         'name' => 'Checking Account',
+        'bank' => 'Test Bank',
         'initial_balance' => 1000.00,
     ]);
 });
@@ -34,6 +36,7 @@ test('user can view their accounts list', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('account/Index')
         ->has('accounts', 3)
+        ->has('archivedAccounts', 0)
     );
 });
 
@@ -56,7 +59,8 @@ test('user can update account name', function () {
 
     $response = $this->actingAs($user)->put(route('accounts.update', $account), [
         'name' => 'New Name',
-        'type' => $account->type,
+        'type' => $account->type->value,
+        'bank' => $account->bank,
     ]);
 
     $response->assertRedirect();
@@ -78,7 +82,7 @@ test('user can delete empty account', function () {
     $response = $this->actingAs($user)->delete(route('accounts.destroy', $account));
 
     $response->assertRedirect();
-    $this->assertDatabaseMissing('accounts', ['id' => $account->id]);
+    $this->assertSoftDeleted('accounts', ['id' => $account->id]);
 });
 
 test('user cannot access other users accounts', function () {
