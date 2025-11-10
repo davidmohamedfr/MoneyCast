@@ -4,6 +4,7 @@ namespace App\Domain\Transaction\Repositories;
 
 use App\Domain\Transaction\Data\TransactionData;
 use App\Domain\Transaction\Models\Transaction;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Collection;
 
 class TransactionRepository implements TransactionRepositoryInterface
@@ -84,12 +85,42 @@ class TransactionRepository implements TransactionRepositoryInterface
 
     public function getAllForAccount(int $accountId, ?array $filters = null): Collection
     {
+        $query = $this->buildAccountQuery($accountId, $filters);
+
+        return $query->get();
+    }
+
+    public function getPaginatedForAccount(int $accountId, ?array $filters = null, int $perPage = 20): LengthAwarePaginator
+    {
+        $query = $this->buildAccountQuery($accountId, $filters);
+
+        return $query->paginate($perPage)->withQueryString();
+    }
+
+    private function buildAccountQuery(int $accountId, ?array $filters = null)
+    {
         $query = Transaction::with(['category'])
             ->where('account_id', $accountId)
             ->orderBy('date', 'desc')
             ->orderBy('created_at', 'desc');
 
         if ($filters) {
+            if (isset($filters['payee'])) {
+                $query->where('payee', 'ILIKE', '%'.$filters['payee'].'%');
+            }
+
+            if (isset($filters['amount_min'])) {
+                $query->where('amount', '>=', $filters['amount_min']);
+            }
+
+            if (isset($filters['amount_max'])) {
+                $query->where('amount', '<=', $filters['amount_max']);
+            }
+
+            if (isset($filters['category_id'])) {
+                $query->where('category_id', $filters['category_id']);
+            }
+
             if (isset($filters['start_date'])) {
                 $query->whereDate('date', '>=', $filters['start_date']);
             }
@@ -99,7 +130,7 @@ class TransactionRepository implements TransactionRepositoryInterface
             }
         }
 
-        return $query->get();
+        return $query;
     }
 
     public function getByDateRange(int $accountId, string $startDate, ?string $endDate = null): Collection

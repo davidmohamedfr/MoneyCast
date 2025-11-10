@@ -14,9 +14,13 @@ interface AccountRepositoryInterface
 
     public function delete(Account $account): bool;
 
-    public function findById(int $id): ?Account;
+    public function findById(int $id, array $with = []): ?Account;
 
-    public function getAllForUser(int $userId): Collection;
+    public function getAllForUser(int $userId, array $with = []): Collection;
+
+    public function getActiveForUser(int $userId): Collection;
+
+    public function getArchivedForUser(int $userId): Collection;
 
     public function hasTransactions(Account $account): bool;
 }

@@ -4,21 +4,17 @@ namespace App\Domain\Account\Repositories;
 
 use App\Domain\Account\Data\AccountData;
 use App\Domain\Account\Models\Account;
-use App\Domain\Transaction\Services\TransactionService;
 use Illuminate\Database\Eloquent\Collection;
 
 class AccountRepository implements AccountRepositoryInterface
 {
-    public function __construct(
-        private TransactionService $transactionService
-    ) {}
-
     public function create(AccountData $data): Account
     {
         return Account::create([
             'user_id' => $data->user_id,
             'name' => $data->name,
             'type' => $data->type,
+            'bank' => $data->bank,
             'initial_balance' => $data->initial_balance,
             'currency' => $data->currency,
         ]);
@@ -29,6 +25,7 @@ class AccountRepository implements AccountRepositoryInterface
         $account->update([
             'name' => $data->name,
             'type' => $data->type,
+            'bank' => $data->bank,
         ]);
 
         return $account->fresh();
@@ -39,18 +36,45 @@ class AccountRepository implements AccountRepositoryInterface
         return $account->delete();
     }
 
-    public function findById(int $id): ?Account
+    public function findById(int $id, array $with = []): ?Account
     {
-        return Account::find($id);
+        $query = Account::query();
+
+        if (! empty($with)) {
+            $query->with($with);
+        }
+
+        return $query->find($id);
     }
 
-    public function getAllForUser(int $userId): Collection
+    public function getAllForUser(int $userId, array $with = []): Collection
     {
-        return Account::where('user_id', $userId)->get();
+        $query = Account::where('user_id', $userId);
+
+        if (! empty($with)) {
+            $query->with($with);
+        }
+
+        return $query->get();
+    }
+
+    public function getActiveForUser(int $userId): Collection
+    {
+        return Account::where('user_id', $userId)
+            ->orderBy('name')
+            ->get();
+    }
+
+    public function getArchivedForUser(int $userId): Collection
+    {
+        return Account::onlyTrashed()
+            ->where('user_id', $userId)
+            ->orderBy('name')
+            ->get();
     }
 
     public function hasTransactions(Account $account): bool
     {
-        return $this->transactionService->hasTransactions($account->id);
+        return $account->transactions()->exists();
     }
 }
