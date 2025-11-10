@@ -2,9 +2,9 @@
 
 namespace App\Domain\Account\Actions;
 
+use App\Domain\Account\Exceptions\AccountHasTransactionsException;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Repositories\AccountRepositoryInterface;
-use Exception;
 
 class DeleteAccountAction
 {
@@ -15,7 +15,7 @@ class DeleteAccountAction
     public function execute(Account $account): bool
     {
         if ($this->repository->hasTransactions($account)) {
-            throw new Exception('Cannot delete account with transactions');
+            throw new AccountHasTransactionsException($account);
         }
 
         return $this->repository->delete($account);

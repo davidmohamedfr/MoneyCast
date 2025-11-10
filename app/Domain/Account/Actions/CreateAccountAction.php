@@ -14,6 +14,7 @@ class CreateAccountAction
 
     public function execute(AccountData $data): Account
     {
+        // Opening balance transaction is now auto-created by AccountObserver
         return $this->repository->create($data);
     }
 }
