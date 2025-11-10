@@ -91,7 +91,7 @@ class AccountController extends Controller
             return redirect()->route('accounts.index')
                 ->with('success', 'Account deleted successfully');
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            return redirect()->route('accounts.index')->with('error', $e->getMessage());
         }
     }
 }
