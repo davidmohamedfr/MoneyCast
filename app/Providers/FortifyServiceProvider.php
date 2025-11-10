@@ -51,8 +51,8 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
-            'isDev' => !app()->environment('production'),
-            'devUsers' => !app()->environment('production') ? [
+            'isDev' => ! app()->environment('production'),
+            'devUsers' => ! app()->environment('production') ? [
                 [
                     'email' => 'dev-no-accounts@moneycast.test',
                     'label' => 'No accounts',

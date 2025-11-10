@@ -14,9 +14,10 @@ class AccountFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'name' => $this->faker->words(2, true) . ' Account',
+            'name' => $this->faker->words(2, true).' Account',
             'type' => $this->faker->randomElement(['checking', 'savings', 'credit']),
-            'initial_balance' => $this->faker->randomFloat(2, 0, 10000),
+            'bank' => $this->faker->company(),
+            'initial_balance' => 0, // Default to 0 to avoid opening balance transactions in tests
             'currency' => 'EUR',
         ];
     }

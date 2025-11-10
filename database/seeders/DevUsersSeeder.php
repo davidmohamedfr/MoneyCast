@@ -23,9 +23,10 @@ class DevUsersSeeder extends Seeder
             );
         }
 
-        if ($this->command && !app()->runningUnitTests()) {
-            if (!$this->command->confirm('This will create 5 dev users with various account and transaction scenarios. Continue?', true)) {
+        if ($this->command && ! app()->runningUnitTests()) {
+            if (! $this->command->confirm('This will create 5 dev users with various account and transaction scenarios. Continue?', true)) {
                 $this->command->info('Dev user seeding cancelled.');
+
                 return;
             }
         }
@@ -93,6 +94,7 @@ class DevUsersSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Main Checking',
             'type' => 'checking',
+            'bank' => 'Test Bank',
             'initial_balance' => 1500.00,
             'currency' => 'EUR',
         ]);
@@ -121,6 +123,7 @@ class DevUsersSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Primary Checking',
             'type' => 'checking',
+            'bank' => 'Test Bank',
             'initial_balance' => 2500.00,
             'currency' => 'EUR',
         ]);
@@ -129,6 +132,7 @@ class DevUsersSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Savings Account',
             'type' => 'savings',
+            'bank' => 'Test Bank',
             'initial_balance' => 8000.00,
             'currency' => 'EUR',
         ]);
@@ -136,7 +140,8 @@ class DevUsersSeeder extends Seeder
         Account::create([
             'user_id' => $user->id,
             'name' => 'Credit Card',
-            'type' => 'credit_card',
+            'type' => 'credit',
+            'bank' => 'Test Bank',
             'initial_balance' => -450.00,
             'currency' => 'EUR',
         ]);
@@ -165,6 +170,7 @@ class DevUsersSeeder extends Seeder
             'user_id' => $user->id,
             'name' => 'Checking Account',
             'type' => 'checking',
+            'bank' => 'Test Bank',
             'initial_balance' => 3000.00,
             'currency' => 'EUR',
         ]);
@@ -197,6 +203,7 @@ class DevUsersSeeder extends Seeder
                 'user_id' => $user->id,
                 'name' => 'Main Checking',
                 'type' => 'checking',
+                'bank' => 'Test Bank',
                 'initial_balance' => 4500.00,
                 'currency' => 'EUR',
             ]),
@@ -204,13 +211,15 @@ class DevUsersSeeder extends Seeder
                 'user_id' => $user->id,
                 'name' => 'Emergency Savings',
                 'type' => 'savings',
+                'bank' => 'Savings Bank',
                 'initial_balance' => 12000.00,
                 'currency' => 'EUR',
             ]),
             Account::create([
                 'user_id' => $user->id,
                 'name' => 'Visa Credit Card',
-                'type' => 'credit_card',
+                'type' => 'credit',
+                'bank' => 'Credit Bank',
                 'initial_balance' => -850.00,
                 'currency' => 'EUR',
             ]),
