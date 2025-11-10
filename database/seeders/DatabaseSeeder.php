@@ -17,5 +17,11 @@ class DatabaseSeeder extends Seeder
             DefaultUserSeeder::class,
             CategorySeeder::class,
         ]);
+
+        if (!app()->environment('production')) {
+            $this->call([
+                TestUsersSeeder::class,
+            ]);
+        }
     }
 }
