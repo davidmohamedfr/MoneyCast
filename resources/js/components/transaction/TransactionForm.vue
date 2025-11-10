@@ -37,6 +37,13 @@ const emit = defineEmits<{
 
 const validationSchema = toTypedSchema(transactionSchema);
 
+// Auto-select first account if only one exists
+const defaultAccountId = computed(() => {
+    if (props.transaction) return props.transaction.account_id;
+    if (props.accounts.length === 1) return props.accounts[0].id;
+    return props.accounts[0]?.id;
+});
+
 const { errors, defineField, handleSubmit, isSubmitting, values } = useForm({
     validationSchema,
     initialValues: props.transaction
@@ -51,7 +58,7 @@ const { errors, defineField, handleSubmit, isSubmitting, values } = useForm({
               notes: props.transaction.notes,
           }
         : {
-              account_id: props.accounts[0]?.id,
+              account_id: defaultAccountId.value,
               type: 'expense',
               amount: 0,
               payee: '',
@@ -107,7 +114,8 @@ const onSubmit = handleSubmit((values) => {
                 Required Information
             </h3>
             <div class="space-y-4">
-                <div class="space-y-2">
+                <!-- Only show account selector if more than one account -->
+                <div v-if="accounts.length > 1" class="space-y-2">
                     <Label for="account_id">Account</Label>
                     <Select
                         v-model="accountId"
@@ -123,7 +131,14 @@ const onSubmit = handleSubmit((values) => {
                                 :key="account.id"
                                 :value="account.id"
                             >
-                                {{ account.name }}
+                                <div class="flex flex-col">
+                                    <span class="font-medium">{{
+                                        account.name
+                                    }}</span>
+                                    <span class="text-xs text-muted-foreground">
+                                        {{ account.bank }}
+                                    </span>
+                                </div>
                             </SelectItem>
                         </SelectContent>
                     </Select>
@@ -131,6 +146,21 @@ const onSubmit = handleSubmit((values) => {
                         :message="errors.account_id"
                         help-text="Choose the account this transaction belongs to"
                     />
+                </div>
+
+                <!-- Show account name when only one account exists -->
+                <div v-else-if="accounts.length === 1" class="space-y-2">
+                    <Label>Account</Label>
+                    <div
+                        class="flex flex-col rounded-md border border-input bg-muted/50 px-3 py-2"
+                    >
+                        <span class="font-medium text-foreground">{{
+                            accounts[0].name
+                        }}</span>
+                        <span class="text-sm text-muted-foreground">
+                            {{ accounts[0].bank }}
+                        </span>
+                    </div>
                 </div>
 
                 <div class="space-y-2">

@@ -12,6 +12,7 @@ interface PageProps {
     categories: Category[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<PageProps>();
 
 const handleSubmit = (values: any) => {

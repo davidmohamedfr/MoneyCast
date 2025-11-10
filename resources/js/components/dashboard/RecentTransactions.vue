@@ -13,6 +13,7 @@ import type { Transaction } from '@/types/transaction';
 import { router } from '@inertiajs/vue3';
 import { computed } from 'vue';
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<{
     transactions: Transaction[];
 }>();

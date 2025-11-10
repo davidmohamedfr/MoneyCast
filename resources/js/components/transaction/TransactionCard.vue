@@ -18,8 +18,9 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { useFormatCurrency } from '@/composables/useFormatCurrency';
 import type { Transaction } from '@/types/transaction';
-import { router } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
@@ -30,13 +31,13 @@ const emit = defineEmits<{
     delete: [id: number];
 }>();
 
+const { formatCurrency, getTransactionColorClass } = useFormatCurrency();
+
 const showDeleteDialog = ref(false);
 
 const formattedAmount = computed(() => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'EUR', // TODO: Get from account when available
-    }).format(parseFloat(props.transaction.amount));
+    const currency = props.transaction.account?.currency || 'EUR';
+    return formatCurrency(props.transaction.amount, currency);
 });
 
 const formattedDate = computed(() => {
@@ -60,6 +61,10 @@ const typeColor = computed(() => {
     }
 });
 
+const amountColorClass = computed(() =>
+    getTransactionColorClass(props.transaction.type),
+);
+
 const handleEdit = () => {
     router.visit(`/transactions/${props.transaction.id}/edit`);
 };
@@ -81,7 +86,13 @@ const confirmDelete = () => {
                     <CardDescription>
                         {{ formattedDate }}
                         <span v-if="transaction.account" class="ml-2">
-                            • {{ transaction.account.name }}
+                            •
+                            <Link
+                                :href="`/accounts/${transaction.account.id}`"
+                                class="hover:underline focus:underline"
+                            >
+                                {{ transaction.account.name }}
+                            </Link>
                         </span>
                     </CardDescription>
                 </div>
@@ -90,14 +101,7 @@ const confirmDelete = () => {
                         {{ transaction.type }}
                     </Badge>
                     <span
-                        :class="{
-                            'text-green-600 dark:text-green-400':
-                                transaction.type === 'income',
-                            'text-red-600 dark:text-red-400':
-                                transaction.type === 'expense',
-                            'text-blue-600 dark:text-blue-400':
-                                transaction.type === 'transfer',
-                        }"
+                        :class="amountColorClass"
                         class="text-xl font-semibold"
                     >
                         {{ transaction.type === 'expense' ? '-' : '+'

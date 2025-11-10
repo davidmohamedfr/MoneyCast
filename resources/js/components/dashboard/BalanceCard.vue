@@ -7,6 +7,7 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useFormatCurrency } from '@/composables/useFormatCurrency';
 import { computed } from 'vue';
 
 const props = defineProps<{
@@ -14,25 +15,13 @@ const props = defineProps<{
     currency?: string;
 }>();
 
-const currencyFormatter = computed(() => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: props.currency || 'EUR',
-    });
-});
+const { formatCurrency, getBalanceColorClass } = useFormatCurrency();
 
 const formattedBalance = computed(() => {
-    return currencyFormatter.value.format(props.totalBalance);
+    return formatCurrency(props.totalBalance, props.currency || 'EUR');
 });
 
-const balanceColor = computed(() => {
-    if (props.totalBalance > 0) {
-        return 'text-green-600 dark:text-green-400';
-    } else if (props.totalBalance < 0) {
-        return 'text-red-600 dark:text-red-400';
-    }
-    return 'text-muted-foreground';
-});
+const balanceColor = computed(() => getBalanceColorClass(props.totalBalance));
 
 const balanceStatus = computed(() => {
     if (props.totalBalance > 0) {

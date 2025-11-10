@@ -21,7 +21,9 @@ interface AccountWithBalance {
         id: number;
         name: string;
         type: string;
+        bank: string;
         currency: string;
+        archived_at: string | null;
     };
     current_balance: number;
     projected_balance: number;
@@ -60,7 +62,7 @@ const breadcrumbs: BreadcrumbItem[] = [
                         <div class="grid gap-2">
                             <Link
                                 href="/transactions/create"
-                                class="group flex items-start gap-3 rounded-lg border border-sidebar-border/70 p-4 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-sm focus-standard dark:border-sidebar-border dark:hover:bg-accent/50"
+                                class="group focus-standard flex items-start gap-3 rounded-lg border border-sidebar-border/70 p-4 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-sm dark:border-sidebar-border dark:hover:bg-accent/50"
                             >
                                 <div
                                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"
@@ -85,7 +87,7 @@ const breadcrumbs: BreadcrumbItem[] = [
 
                             <Link
                                 href="/accounts/create"
-                                class="group flex items-start gap-3 rounded-lg border border-sidebar-border/70 p-4 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-sm focus-standard dark:border-sidebar-border dark:hover:bg-accent/50"
+                                class="group focus-standard flex items-start gap-3 rounded-lg border border-sidebar-border/70 p-4 transition-all hover:border-primary/50 hover:bg-accent hover:shadow-sm dark:border-sidebar-border dark:hover:bg-accent/50"
                             >
                                 <div
                                     class="flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary/10 text-primary transition-colors group-hover:bg-primary group-hover:text-primary-foreground"

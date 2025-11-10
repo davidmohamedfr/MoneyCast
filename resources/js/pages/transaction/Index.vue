@@ -11,6 +11,7 @@ interface PageProps {
     transactions: Transaction[];
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<PageProps>();
 
 const handleDelete = (id: number) => {

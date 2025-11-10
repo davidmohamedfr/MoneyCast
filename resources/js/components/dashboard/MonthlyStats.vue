@@ -8,6 +8,7 @@ import {
     CardTitle,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import { useFormatCurrency } from '@/composables/useFormatCurrency';
 import { computed } from 'vue';
 
 interface MonthlyStats {
@@ -22,33 +23,21 @@ const props = defineProps<{
     currency?: string;
 }>();
 
-const currencyFormatter = computed(() => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: props.currency || 'EUR',
-    });
-});
+const { formatCurrency, getBalanceColorClass } = useFormatCurrency();
 
 const formattedIncome = computed(() => {
-    return currencyFormatter.value.format(props.stats.income);
+    return formatCurrency(props.stats.income, props.currency || 'EUR');
 });
 
 const formattedExpenses = computed(() => {
-    return currencyFormatter.value.format(props.stats.expenses);
+    return formatCurrency(props.stats.expenses, props.currency || 'EUR');
 });
 
 const formattedNet = computed(() => {
-    return currencyFormatter.value.format(props.stats.net);
+    return formatCurrency(props.stats.net, props.currency || 'EUR');
 });
 
-const netColor = computed(() => {
-    if (props.stats.net > 0) {
-        return 'text-green-600 dark:text-green-400';
-    } else if (props.stats.net < 0) {
-        return 'text-red-600 dark:text-red-400';
-    }
-    return 'text-muted-foreground';
-});
+const netColor = computed(() => getBalanceColorClass(props.stats.net));
 
 const netStatus = computed(() => {
     if (props.stats.net > 0) {
