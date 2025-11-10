@@ -15,7 +15,20 @@ class AccountService
 
     public function getAccountsWithBalances(int $userId): array
     {
-        $accounts = $this->repository->getAllForUser($userId);
+        $accounts = $this->repository->getActiveForUser($userId);
+
+        return $accounts->map(function (Account $account) {
+            return [
+                'account' => $account,
+                'current_balance' => $this->calculateCurrentBalance($account),
+                'projected_balance' => $this->calculateProjectedBalance($account),
+            ];
+        })->toArray();
+    }
+
+    public function getArchivedAccountsWithBalances(int $userId): array
+    {
+        $accounts = $this->repository->getArchivedForUser($userId);
 
         return $accounts->map(function (Account $account) {
             return [
@@ -28,9 +41,10 @@ class AccountService
 
     public function calculateCurrentBalance(Account $account): float
     {
+        // Initial balance is now a transaction (via AccountObserver), so start at 0
         return $this->transactionService->calculateAccountBalance(
             $account->id,
-            (float) $account->initial_balance,
+            0,
             now()->format('Y-m-d')
         );
     }
@@ -38,9 +52,10 @@ class AccountService
     public function calculateProjectedBalance(Account $account): float
     {
         // Calculate balance including future-dated transactions (no date limit)
+        // Initial balance is now a transaction (via AccountObserver), so start at 0
         return $this->transactionService->calculateAccountBalance(
             $account->id,
-            (float) $account->initial_balance
+            0
         );
     }
 }

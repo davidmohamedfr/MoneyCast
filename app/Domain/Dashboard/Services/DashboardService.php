@@ -4,6 +4,7 @@ namespace App\Domain\Dashboard\Services;
 
 use App\Domain\Account\Repositories\AccountRepositoryInterface;
 use App\Domain\Account\Services\AccountService;
+use App\Domain\Transaction\Enums\TransactionType;
 use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
 
 class DashboardService
@@ -49,6 +50,9 @@ class DashboardService
     {
         $transactions = $this->transactionRepository->getAllForUser($userId);
 
+        // Exclude opening balance transactions from recent transactions
+        $transactions = $transactions->filter(fn ($transaction) => $transaction->payee !== 'Opening Balance');
+
         return $transactions->take($limit)->toArray();
     }
 
@@ -62,13 +66,16 @@ class DashboardService
             'end_date' => $endDate,
         ]);
 
+        // Exclude opening balance transactions from monthly stats
+        $transactions = $transactions->filter(fn ($transaction) => $transaction->payee !== 'Opening Balance');
+
         $income = 0.0;
         $expenses = 0.0;
 
         foreach ($transactions as $transaction) {
             match ($transaction->type) {
-                'income' => $income += (float) $transaction->amount,
-                'expense' => $expenses += (float) $transaction->amount,
+                TransactionType::Income => $income += (float) $transaction->amount,
+                TransactionType::Expense => $expenses += (float) $transaction->amount,
                 default => null,
             };
         }
