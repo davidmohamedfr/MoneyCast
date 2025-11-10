@@ -10,8 +10,11 @@ use function Pest\Laravel\assertDatabaseHas;
 use function Pest\Laravel\delete;
 use function Pest\Laravel\get;
 use function Pest\Laravel\post;
+use function Pest\Laravel\put;
 
 test('complete new user onboarding journey', function () {
+    seedCategories();
+
     // Step 1: User registers and logs in
     $user = User::factory()->create([
         'name' => 'John Doe',
@@ -26,7 +29,7 @@ test('complete new user onboarding journey', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('Dashboard')
         ->has('accounts', 0)
-        ->where('total_balance', 0.0)
+        ->where('total_balance', 0)
     );
 
     // Step 3: User creates their first account (checking)
@@ -53,7 +56,7 @@ test('complete new user onboarding journey', function () {
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
         ->has('accounts', 2)
-        ->where('total_balance', 15000.0)
+        ->where('total_balance', 15000)
     );
 
     // Step 6: User records their first transaction (salary)
@@ -69,11 +72,12 @@ test('complete new user onboarding journey', function () {
         'description' => 'September salary',
     ]);
     $response->assertRedirect(route('transactions.index'));
+    $response->assertSessionHasNoErrors();
 
     // Step 7: User records some expenses
     $expenseCategory = Category::where('type', 'expense')->first();
 
-    post(route('transactions.store'), [
+    $response = post(route('transactions.store'), [
         'account_id' => $checking->id,
         'type' => 'expense',
         'amount' => 150,
@@ -81,8 +85,10 @@ test('complete new user onboarding journey', function () {
         'date' => now()->format('Y-m-d'),
         'category_id' => $expenseCategory->id,
     ]);
+    $response->assertRedirect(route('transactions.index'));
+    $response->assertSessionHasNoErrors();
 
-    post(route('transactions.store'), [
+    $response = post(route('transactions.store'), [
         'account_id' => $checking->id,
         'type' => 'expense',
         'amount' => 80,
@@ -90,14 +96,16 @@ test('complete new user onboarding journey', function () {
         'date' => now()->format('Y-m-d'),
         'category_id' => $expenseCategory->id,
     ]);
+    $response->assertRedirect(route('transactions.index'));
+    $response->assertSessionHasNoErrors();
 
     // Step 8: Dashboard reflects all changes
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 18270.0) // 5000 + 10000 + 3500 - 150 - 80
-        ->where('monthly_stats.income', 3500.0)
-        ->where('monthly_stats.expenses', 230.0)
-        ->where('monthly_stats.net', 3270.0)
+        ->where('total_balance', 18270) // 5000 + 10000 + 3500 - 150 - 80
+        ->where('monthly_stats.income', 3500)
+        ->where('monthly_stats.expenses', 230)
+        ->where('monthly_stats.net', 3270)
         ->where('monthly_stats.transaction_count', 3)
         ->has('recent_transactions', 3)
     );
@@ -106,7 +114,7 @@ test('complete new user onboarding journey', function () {
     $response = get(route('accounts.show', $checking));
     $response->assertInertia(fn ($page) => $page
         ->where('account.name', 'My Checking Account')
-        ->where('current_balance', 8270.0) // 5000 + 3500 - 150 - 80
+        ->where('current_balance', 8270) // 5000 + 3500 - 150 - 80
     );
 
     // Verify final database state
@@ -115,6 +123,8 @@ test('complete new user onboarding journey', function () {
 });
 
 test('complete expense tracking workflow', function () {
+    seedCategories();
+
     $user = User::factory()->create();
     actingAs($user);
 
@@ -171,18 +181,21 @@ test('complete expense tracking workflow', function () {
     // Check monthly stats
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('monthly_stats.expenses', 445.0)
+        ->where('monthly_stats.expenses', 445)
         ->where('monthly_stats.transaction_count', 4)
     );
 
     // Check account balance
     $response = get(route('accounts.show', $account));
     $response->assertInertia(fn ($page) => $page
-        ->where('current_balance', 1555.0) // 2000 - 445
+        ->where('current_balance', 1880) // 2000 - 120 (only past transactions)
+        ->where('projected_balance', 1555) // 2000 - 445 (all transactions)
     );
 });
 
 test('complete income and savings workflow', function () {
+    seedCategories();
+
     $user = User::factory()->create();
     actingAs($user);
 
@@ -236,18 +249,20 @@ test('complete income and savings workflow', function () {
     // Verify balances
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('monthly_stats.income', 4000.0)
-        ->where('monthly_stats.expenses', 800.0)
+        ->where('monthly_stats.income', 4000)
+        ->where('monthly_stats.expenses', 800)
     );
 
     // Checking: 500 + 4000 - 1000 - 800 = 2700
     $response = get(route('accounts.show', $checking));
     $response->assertInertia(fn ($page) => $page
-        ->where('current_balance', 2700.0)
+        ->where('current_balance', 2700)
     );
 });
 
 test('complete budget planning with future transactions', function () {
+    seedCategories();
+
     $user = User::factory()->create();
     actingAs($user);
 
@@ -286,12 +301,14 @@ test('complete budget planning with future transactions', function () {
     // Check account shows current vs projected balance
     $response = get(route('accounts.show', $account));
     $response->assertInertia(fn ($page) => $page
-        ->where('current_balance', 2800.0) // 3000 - 200
-        ->where('projected_balance', 2000.0) // 3000 - 200 - 500 - 300
+        ->where('current_balance', 2800) // 3000 - 200
+        ->where('projected_balance', 2000) // 3000 - 200 - 500 - 300
     );
 });
 
 test('complete multi-account management workflow', function () {
+    seedCategories();
+
     $user = User::factory()->create();
     actingAs($user);
 
@@ -326,7 +343,7 @@ test('complete multi-account management workflow', function () {
     // Dashboard shows net worth
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 8300.0) // 1500 + 8000 - 1200
+        ->where('total_balance', 8300) // 1500 + 8000 - 1200
     );
 
     // Use credit card
@@ -353,11 +370,13 @@ test('complete multi-account management workflow', function () {
     // Verify updated balances
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 8650.0) // 1500 + 8000 + (-1200 - 150 + 500)
+        ->where('total_balance', 8650) // 1500 + 8000 + (-1200 - 150 + 500)
     );
 });
 
 test('complete error recovery workflow', function () {
+    seedCategories();
+
     $user = User::factory()->create();
     actingAs($user);
 
@@ -377,7 +396,7 @@ test('complete error recovery workflow', function () {
     $response = get(route('transactions.edit', $transaction));
     $response->assertStatus(200);
 
-    $response = post(route('transactions.update', ['transaction' => $transaction]), [
+    $response = put(route('transactions.update', $transaction), [
         'account_id' => $account->id,
         'type' => 'expense',
         'amount' => 100, // Corrected amount

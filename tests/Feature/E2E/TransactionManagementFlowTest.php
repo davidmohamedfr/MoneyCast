@@ -14,6 +14,7 @@ use function Pest\Laravel\post;
 use function Pest\Laravel\put;
 
 beforeEach(function () {
+    seedCategories();
     $this->user = User::factory()->create();
     $this->account = Account::factory()->create(['user_id' => $this->user->id]);
     $this->category = Category::factory()->expense()->create();
@@ -250,7 +251,7 @@ test('transaction balance affects account balance correctly', function () {
     // Check account balance via show page
     $response = get(route('accounts.show', $account));
     $response->assertInertia(fn ($page) => $page
-        ->where('current_balance', 1300.0) // 1000 + 500 - 200
+        ->where('current_balance', 1300) // 1000 + 500 - 200
     );
 });
 
@@ -280,8 +281,8 @@ test('future-dated transactions affect projected balance only', function () {
 
     $response = get(route('accounts.show', $account));
     $response->assertInertia(fn ($page) => $page
-        ->where('current_balance', 1500.0) // Only current transaction
-        ->where('projected_balance', 1800.0) // Includes future transaction
+        ->where('current_balance', 1500) // Only current transaction
+        ->where('projected_balance', 1800) // Includes future transaction
     );
 });
 
