@@ -41,7 +41,7 @@ test('dashboard shows correct total balance', function () {
     $response = get(route('dashboard'));
 
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 1500.0)
+        ->where('total_balance', 1500)
     );
 });
 
@@ -88,9 +88,9 @@ test('dashboard shows monthly stats', function () {
     $response = get(route('dashboard'));
 
     $response->assertInertia(fn ($page) => $page
-        ->where('monthly_stats.income', 1000.0)
-        ->where('monthly_stats.expenses', 300.0)
-        ->where('monthly_stats.net', 700.0)
+        ->where('monthly_stats.income', 1000)
+        ->where('monthly_stats.expenses', 300)
+        ->where('monthly_stats.net', 700)
         ->where('monthly_stats.transaction_count', 2)
     );
 });
@@ -112,7 +112,7 @@ test('dashboard excludes other users data', function () {
 
     $response->assertInertia(fn ($page) => $page
         ->has('recent_transactions', 0)
-        ->where('total_balance', 0.0)
+        ->where('total_balance', 0)
     );
 });
 
@@ -140,8 +140,8 @@ test('dashboard monthly stats only includes current month transactions', functio
     $response = get(route('dashboard'));
 
     $response->assertInertia(fn ($page) => $page
-        ->where('monthly_stats.income', 500.0)
-        ->where('monthly_stats.expenses', 0.0)
+        ->where('monthly_stats.income', 500)
+        ->where('monthly_stats.expenses', 0)
         ->where('monthly_stats.transaction_count', 1)
     );
 });

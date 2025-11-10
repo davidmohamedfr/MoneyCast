@@ -19,18 +19,24 @@ class DashboardService
         $accounts = $this->accountService->getAccountsWithBalances($userId);
         $recentTransactions = $this->getRecentTransactions($userId, 10);
         $monthlyStats = $this->getMonthlyStats($userId);
+        $totalBalance = $this->calculateTotalBalance($accounts);
 
         return [
             'accounts' => $accounts,
-            'total_balance' => $this->calculateTotalBalance($accounts),
+            'total_balance' => (float) round($totalBalance, 2),
             'recent_transactions' => $recentTransactions,
-            'monthly_stats' => $monthlyStats,
+            'monthly_stats' => [
+                'income' => (float) round($monthlyStats['income'], 2),
+                'expenses' => (float) round($monthlyStats['expenses'], 2),
+                'net' => (float) round($monthlyStats['net'], 2),
+                'transaction_count' => $monthlyStats['transaction_count'],
+            ],
         ];
     }
 
     private function calculateTotalBalance(array $accounts): float
     {
-        $total = 0;
+        $total = 0.0;
 
         foreach ($accounts as $accountData) {
             $total += $accountData['current_balance'];
@@ -56,8 +62,8 @@ class DashboardService
             'end_date' => $endDate,
         ]);
 
-        $income = 0;
-        $expenses = 0;
+        $income = 0.0;
+        $expenses = 0.0;
 
         foreach ($transactions as $transaction) {
             match ($transaction->type) {
@@ -68,9 +74,9 @@ class DashboardService
         }
 
         return [
-            'income' => $income,
-            'expenses' => $expenses,
-            'net' => $income - $expenses,
+            'income' => (float) $income,
+            'expenses' => (float) $expenses,
+            'net' => (float) ($income - $expenses),
             'transaction_count' => $transactions->count(),
         ];
     }

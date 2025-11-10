@@ -38,7 +38,7 @@ class TransactionService
             };
         }
 
-        return $balance;
+        return (float) round($balance, 2);
     }
 
     public function hasTransactions(int $accountId): bool

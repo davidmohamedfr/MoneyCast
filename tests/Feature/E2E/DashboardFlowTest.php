@@ -19,11 +19,11 @@ test('dashboard shows empty state for new user', function () {
     $response->assertInertia(fn ($page) => $page
         ->component('Dashboard')
         ->has('accounts', 0)
-        ->where('total_balance', 0.0)
+        ->where('total_balance', 0)
         ->has('recent_transactions', 0)
-        ->where('monthly_stats.income', 0.0)
-        ->where('monthly_stats.expenses', 0.0)
-        ->where('monthly_stats.net', 0.0)
+        ->where('monthly_stats.income', 0)
+        ->where('monthly_stats.expenses', 0)
+        ->where('monthly_stats.net', 0)
         ->where('monthly_stats.transaction_count', 0)
     );
 });
@@ -55,7 +55,7 @@ test('dashboard aggregates data from multiple accounts', function () {
 
     $response->assertInertia(fn ($page) => $page
         ->has('accounts', 3)
-        ->where('total_balance', 11000.0) // 2500 + 10000 - 1500
+        ->where('total_balance', 11000) // 2500 + 10000 - 1500
     );
 });
 
@@ -112,9 +112,9 @@ test('dashboard monthly stats calculate current month only', function () {
     $response = get(route('dashboard'));
 
     $response->assertInertia(fn ($page) => $page
-        ->where('monthly_stats.income', 3000.0)
-        ->where('monthly_stats.expenses', 800.0)
-        ->where('monthly_stats.net', 2200.0)
+        ->where('monthly_stats.income', 3000)
+        ->where('monthly_stats.expenses', 800)
+        ->where('monthly_stats.net', 2200)
         ->where('monthly_stats.transaction_count', 2)
     );
 });
@@ -130,7 +130,7 @@ test('dashboard updates in real-time when transactions are added', function () {
     // Initial state
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 1000.0)
+        ->where('total_balance', 1000)
         ->where('monthly_stats.transaction_count', 0)
     );
 
@@ -145,8 +145,8 @@ test('dashboard updates in real-time when transactions are added', function () {
     // Dashboard should reflect the change
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 1500.0)
-        ->where('monthly_stats.income', 500.0)
+        ->where('total_balance', 1500)
+        ->where('monthly_stats.income', 500)
         ->where('monthly_stats.transaction_count', 1)
     );
 
@@ -161,10 +161,10 @@ test('dashboard updates in real-time when transactions are added', function () {
     // Dashboard should reflect both transactions
     $response = get(route('dashboard'));
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 1300.0)
-        ->where('monthly_stats.income', 500.0)
-        ->where('monthly_stats.expenses', 200.0)
-        ->where('monthly_stats.net', 300.0)
+        ->where('total_balance', 1300)
+        ->where('monthly_stats.income', 500)
+        ->where('monthly_stats.expenses', 200)
+        ->where('monthly_stats.net', 300)
         ->where('monthly_stats.transaction_count', 2)
     );
 });
@@ -213,8 +213,8 @@ test('dashboard shows correct balance with mixed transaction types', function ()
     // Checking: 1000 + 2500 - 400 - 1000 = 2100
     // Savings: 5000 (transfers should be balanced with income on savings side)
     $response->assertInertia(fn ($page) => $page
-        ->where('monthly_stats.income', 2500.0)
-        ->where('monthly_stats.expenses', 400.0)
+        ->where('monthly_stats.income', 2500)
+        ->where('monthly_stats.expenses', 400)
     );
 });
 
@@ -242,9 +242,9 @@ test('dashboard isolates user data correctly', function () {
     // Should see empty dashboard, not other user's data
     $response->assertInertia(fn ($page) => $page
         ->has('accounts', 0)
-        ->where('total_balance', 0.0)
+        ->where('total_balance', 0)
         ->has('recent_transactions', 0)
-        ->where('monthly_stats.income', 0.0)
+        ->where('monthly_stats.income', 0)
     );
 });
 
@@ -286,7 +286,7 @@ test('dashboard handles accounts with negative balances', function () {
     $response = get(route('dashboard'));
 
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 1000.0) // 3000 - 2000
+        ->where('total_balance', 1000) // 3000 - 2000
     );
 
     // Make a payment to credit card
@@ -302,7 +302,7 @@ test('dashboard handles accounts with negative balances', function () {
     // Credit card balance: -2000 - 500 = -2500
     // Total: 3000 - 2500 = 500
     $response->assertInertia(fn ($page) => $page
-        ->where('total_balance', 500.0)
+        ->where('total_balance', 500)
     );
 });
 
