@@ -51,6 +51,29 @@ class FortifyServiceProvider extends ServiceProvider
             'canResetPassword' => Features::enabled(Features::resetPasswords()),
             'canRegister' => Features::enabled(Features::registration()),
             'status' => $request->session()->get('status'),
+            'isDev' => !app()->environment('production'),
+            'devUsers' => !app()->environment('production') ? [
+                [
+                    'email' => 'dev-no-accounts@moneycast.test',
+                    'label' => 'No accounts',
+                ],
+                [
+                    'email' => 'dev-single-account@moneycast.test',
+                    'label' => 'Single account, no transactions',
+                ],
+                [
+                    'email' => 'dev-multiple-accounts@moneycast.test',
+                    'label' => '3 accounts, no transactions',
+                ],
+                [
+                    'email' => 'dev-single-with-transactions@moneycast.test',
+                    'label' => 'Single account with transactions',
+                ],
+                [
+                    'email' => 'dev-multiple-with-transactions@moneycast.test',
+                    'label' => '3 accounts with transactions',
+                ],
+            ] : [],
         ]));
 
         Fortify::resetPasswordView(fn (Request $request) => Inertia::render('auth/ResetPassword', [

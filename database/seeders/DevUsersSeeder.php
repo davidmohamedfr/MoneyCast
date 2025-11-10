@@ -5,12 +5,11 @@ namespace Database\Seeders;
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
 use App\Domain\Transaction\Models\Transaction;
-use App\Models\DevMagicLink;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
-class TestUsersSeeder extends Seeder
+class DevUsersSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -19,46 +18,44 @@ class TestUsersSeeder extends Seeder
     {
         if (app()->environment('production')) {
             throw new \RuntimeException(
-                'Cannot seed test users in production environment. '.
+                'Cannot seed dev users in production environment. '.
                 'This is a development-only feature for testing purposes.'
             );
         }
 
-        if (!$this->command->confirm('This will create 5 test users with various account and transaction scenarios. Continue?', true)) {
-            $this->command->info('Test user seeding cancelled.');
-            return;
+        if ($this->command && !app()->runningUnitTests()) {
+            if (!$this->command->confirm('This will create 5 dev users with various account and transaction scenarios. Continue?', true)) {
+                $this->command->info('Dev user seeding cancelled.');
+                return;
+            }
         }
 
-        $this->command->info('Creating test users...');
-        $this->command->newLine();
+        if ($this->command) {
+            $this->command->info('Creating dev users...');
+            $this->command->newLine();
+        }
 
         $categories = Category::all();
         $incomeCategories = $categories->where('type', 'income');
         $expenseCategories = $categories->where('type', 'expense');
 
-        $testUsers = [];
+        $devUsers = [];
 
-        $testUsers[] = $this->createUserWithNoAccounts();
+        $devUsers[] = $this->createUserWithNoAccounts();
 
-        $testUsers[] = $this->createUserWithSingleAccountNoTransactions();
+        $devUsers[] = $this->createUserWithSingleAccountNoTransactions();
 
-        $testUsers[] = $this->createUserWithMultipleAccountsNoTransactions();
+        $devUsers[] = $this->createUserWithMultipleAccountsNoTransactions();
 
-        $testUsers[] = $this->createUserWithSingleAccountAndTransactions($incomeCategories, $expenseCategories);
+        $devUsers[] = $this->createUserWithSingleAccountAndTransactions($incomeCategories, $expenseCategories);
 
-        $testUsers[] = $this->createUserWithMultipleAccountsAndTransactions($incomeCategories, $expenseCategories);
+        $devUsers[] = $this->createUserWithMultipleAccountsAndTransactions($incomeCategories, $expenseCategories);
 
-        $this->command->newLine();
-        $this->command->info('Test users created successfully!');
-        $this->command->newLine();
-        $this->command->info('Magic links for authentication:');
-        $this->command->newLine();
-
-        foreach ($testUsers as $userData) {
-            $magicLink = DevMagicLink::generateForUser($userData['user'], 10080);
-            $this->command->info("User: {$userData['email']}");
-            $this->command->info("Scenario: {$userData['scenario']}");
-            $this->command->info("Magic Link: {$magicLink->getUrl()}");
+        if ($this->command) {
+            $this->command->newLine();
+            $this->command->info('Dev users created successfully!');
+            $this->command->newLine();
+            $this->command->info('You can now use the quick-login section on the login page to access these users.');
             $this->command->newLine();
         }
     }
@@ -66,13 +63,15 @@ class TestUsersSeeder extends Seeder
     private function createUserWithNoAccounts(): array
     {
         $user = User::create([
-            'name' => 'Test User - No Accounts',
-            'email' => 'test-no-accounts@moneycast.test',
+            'name' => 'Dev User - No Accounts',
+            'email' => 'dev-no-accounts@moneycast.test',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
 
-        $this->command->info("✓ Created user: {$user->email} (No accounts)");
+        if ($this->command) {
+            $this->command->info("✓ Created user: {$user->email} (No accounts)");
+        }
 
         return [
             'user' => $user,
@@ -84,8 +83,8 @@ class TestUsersSeeder extends Seeder
     private function createUserWithSingleAccountNoTransactions(): array
     {
         $user = User::create([
-            'name' => 'Test User - Single Account',
-            'email' => 'test-single-account@moneycast.test',
+            'name' => 'Dev User - Single Account',
+            'email' => 'dev-single-account@moneycast.test',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -98,7 +97,9 @@ class TestUsersSeeder extends Seeder
             'currency' => 'EUR',
         ]);
 
-        $this->command->info("✓ Created user: {$user->email} (Single account, no transactions)");
+        if ($this->command) {
+            $this->command->info("✓ Created user: {$user->email} (Single account, no transactions)");
+        }
 
         return [
             'user' => $user,
@@ -110,8 +111,8 @@ class TestUsersSeeder extends Seeder
     private function createUserWithMultipleAccountsNoTransactions(): array
     {
         $user = User::create([
-            'name' => 'Test User - Multiple Accounts',
-            'email' => 'test-multiple-accounts@moneycast.test',
+            'name' => 'Dev User - Multiple Accounts',
+            'email' => 'dev-multiple-accounts@moneycast.test',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -140,7 +141,9 @@ class TestUsersSeeder extends Seeder
             'currency' => 'EUR',
         ]);
 
-        $this->command->info("✓ Created user: {$user->email} (3 accounts, no transactions)");
+        if ($this->command) {
+            $this->command->info("✓ Created user: {$user->email} (3 accounts, no transactions)");
+        }
 
         return [
             'user' => $user,
@@ -152,8 +155,8 @@ class TestUsersSeeder extends Seeder
     private function createUserWithSingleAccountAndTransactions($incomeCategories, $expenseCategories): array
     {
         $user = User::create([
-            'name' => 'Test User - Single Account + Transactions',
-            'email' => 'test-single-with-transactions@moneycast.test',
+            'name' => 'Dev User - Single Account + Transactions',
+            'email' => 'dev-single-with-transactions@moneycast.test',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -169,7 +172,9 @@ class TestUsersSeeder extends Seeder
         $transactionCount = rand(8, 15);
         $this->createRandomTransactions($user, $account, $transactionCount, $incomeCategories, $expenseCategories);
 
-        $this->command->info("✓ Created user: {$user->email} (Single account, {$transactionCount} transactions)");
+        if ($this->command) {
+            $this->command->info("✓ Created user: {$user->email} (Single account, {$transactionCount} transactions)");
+        }
 
         return [
             'user' => $user,
@@ -181,8 +186,8 @@ class TestUsersSeeder extends Seeder
     private function createUserWithMultipleAccountsAndTransactions($incomeCategories, $expenseCategories): array
     {
         $user = User::create([
-            'name' => 'Test User - Multiple Accounts + Transactions',
-            'email' => 'test-multiple-with-transactions@moneycast.test',
+            'name' => 'Dev User - Multiple Accounts + Transactions',
+            'email' => 'dev-multiple-with-transactions@moneycast.test',
             'password' => Hash::make('password'),
             'email_verified_at' => now(),
         ]);
@@ -218,7 +223,9 @@ class TestUsersSeeder extends Seeder
             $totalTransactions += $transactionCount;
         }
 
-        $this->command->info("✓ Created user: {$user->email} (3 accounts, {$totalTransactions} total transactions)");
+        if ($this->command) {
+            $this->command->info("✓ Created user: {$user->email} (3 accounts, {$totalTransactions} total transactions)");
+        }
 
         return [
             'user' => $user,

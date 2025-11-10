@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
 
         if (!app()->environment('production')) {
             $this->call([
-                TestUsersSeeder::class,
+                DevUsersSeeder::class,
             ]);
         }
     }
