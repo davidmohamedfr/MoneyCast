@@ -37,7 +37,10 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="name"
                         placeholder="Full name"
                     />
-                    <InputError :message="errors.name" />
+                    <InputError
+                        :message="errors.name"
+                        help-text="Enter your full name as it will appear in the app"
+                    />
                 </div>
 
                 <div class="grid gap-2">
@@ -51,7 +54,10 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="email"
                         placeholder="email@example.com"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError
+                        :message="errors.email"
+                        help-text="Enter a valid email address like user@example.com"
+                    />
                 </div>
 
                 <div class="grid gap-2">
@@ -65,7 +71,10 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="password"
                         placeholder="Password"
                     />
-                    <InputError :message="errors.password" />
+                    <InputError
+                        :message="errors.password"
+                        help-text="Must be at least 8 characters with letters and numbers"
+                    />
                 </div>
 
                 <div class="grid gap-2">
@@ -79,7 +88,10 @@ import { Form, Head } from '@inertiajs/vue3';
                         name="password_confirmation"
                         placeholder="Confirm password"
                     />
-                    <InputError :message="errors.password_confirmation" />
+                    <InputError
+                        :message="errors.password_confirmation"
+                        help-text="Re-enter your password to confirm it matches"
+                    />
                 </div>
 
                 <Button

@@ -33,8 +33,10 @@ const { value: currentPasswordValue, errorMessage: currentPasswordError } =
 const { value: passwordValue, errorMessage: passwordError } =
     useField<string>('password');
 
-const { value: passwordConfirmationValue, errorMessage: passwordConfirmationError } =
-    useField<string>('password_confirmation');
+const {
+    value: passwordConfirmationValue,
+    errorMessage: passwordConfirmationError,
+} = useField<string>('password_confirmation');
 </script>
 
 <template>
@@ -72,9 +74,18 @@ const { value: passwordConfirmationValue, errorMessage: passwordConfirmationErro
                             class="mt-1 block w-full"
                             autocomplete="current-password"
                             placeholder="Current password"
-                            :aria-invalid="!!(currentPasswordError || errors.current_password)"
+                            :aria-invalid="
+                                !!(
+                                    currentPasswordError ||
+                                    errors.current_password
+                                )
+                            "
                         />
-                        <InputError :message="currentPasswordError || errors.current_password" />
+                        <InputError
+                            :message="
+                                currentPasswordError || errors.current_password
+                            "
+                        />
                     </div>
 
                     <div class="grid gap-2">
@@ -89,7 +100,9 @@ const { value: passwordConfirmationValue, errorMessage: passwordConfirmationErro
                             placeholder="New password"
                             :aria-invalid="!!(passwordError || errors.password)"
                         />
-                        <InputError :message="passwordError || errors.password" />
+                        <InputError
+                            :message="passwordError || errors.password"
+                        />
                     </div>
 
                     <div class="grid gap-2">
@@ -104,9 +117,19 @@ const { value: passwordConfirmationValue, errorMessage: passwordConfirmationErro
                             class="mt-1 block w-full"
                             autocomplete="new-password"
                             placeholder="Confirm password"
-                            :aria-invalid="!!(passwordConfirmationError || errors.password_confirmation)"
+                            :aria-invalid="
+                                !!(
+                                    passwordConfirmationError ||
+                                    errors.password_confirmation
+                                )
+                            "
                         />
-                        <InputError :message="passwordConfirmationError || errors.password_confirmation" />
+                        <InputError
+                            :message="
+                                passwordConfirmationError ||
+                                errors.password_confirmation
+                            "
+                        />
                     </div>
 
                     <div class="flex items-center gap-4">

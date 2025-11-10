@@ -52,7 +52,10 @@ defineProps<{
                         autocomplete="email"
                         placeholder="email@example.com"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError
+                        :message="errors.email"
+                        help-text="Enter a valid email address like user@example.com"
+                    />
                 </div>
 
                 <div class="grid gap-2">
@@ -76,7 +79,10 @@ defineProps<{
                         autocomplete="current-password"
                         placeholder="Password"
                     />
-                    <InputError :message="errors.password" />
+                    <InputError
+                        :message="errors.password"
+                        help-text="Must be at least 8 characters with letters and numbers"
+                    />
                 </div>
 
                 <div class="flex items-center justify-between">

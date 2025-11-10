@@ -40,7 +40,7 @@ const footerNavItems: NavItem[] = [
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar id="sidebar-nav" collapsible="icon" variant="inset">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
@@ -60,6 +60,16 @@ const footerNavItems: NavItem[] = [
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
             <NavUser />
+            <div
+                class="mt-2 hidden px-4 text-center text-xs text-muted-foreground group-data-[collapsible=icon]:hidden md:block"
+            >
+                Press
+                <kbd
+                    class="mx-1 inline-flex h-4 min-w-4 items-center justify-center rounded border border-border bg-muted px-1 text-[10px] font-semibold"
+                    >?</kbd
+                >
+                for shortcuts
+            </div>
         </SidebarFooter>
     </Sidebar>
     <slot />

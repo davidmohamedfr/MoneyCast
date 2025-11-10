@@ -2,7 +2,6 @@
 import AlertError from '@/components/AlertError.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
-import { Spinner } from '@/components/ui/spinner';
 import {
     Dialog,
     DialogContent,
@@ -15,15 +14,16 @@ import {
     PinInputGroup,
     PinInputSlot,
 } from '@/components/ui/pin-input';
+import { Spinner } from '@/components/ui/spinner';
 import { useTwoFactorAuth } from '@/composables/useTwoFactorAuth';
+import { twoFactorCodeSchema } from '@/lib/validation';
 import { confirm } from '@/routes/two-factor';
 import { Form } from '@inertiajs/vue3';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useClipboard } from '@vueuse/core';
-import { useField, useForm } from 'vee-validate';
 import { Check, Copy, ScanLine } from 'lucide-vue-next';
+import { useField, useForm } from 'vee-validate';
 import { computed, nextTick, ref, useTemplateRef, watch } from 'vue';
-import { twoFactorCodeSchema } from '@/lib/validation';
 
 interface Props {
     requiresConfirmation: boolean;
