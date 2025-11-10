@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/select';
 import { accountSchema, accountUpdateSchema } from '@/lib/validation/account';
 import type { Account } from '@/types/account';
+import { router } from '@inertiajs/vue3';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm } from 'vee-validate';
 
@@ -34,12 +35,14 @@ const { errors, defineField, handleSubmit, isSubmitting } = useForm({
         ? {
               name: props.account.name,
               type: props.account.type,
+              bank: props.account.bank,
               initial_balance: props.account.initial_balance,
               currency: props.account.currency,
           }
         : {
               name: '',
               type: 'checking',
+              bank: '',
               initial_balance: 0,
               currency: 'EUR',
           },
@@ -47,6 +50,7 @@ const { errors, defineField, handleSubmit, isSubmitting } = useForm({
 
 const [name, nameAttrs] = defineField('name');
 const [type, typeAttrs] = defineField('type');
+const [bank, bankAttrs] = defineField('bank');
 const [initialBalance, initialBalanceAttrs] = defineField('initial_balance');
 const [currency, currencyAttrs] = defineField('currency');
 
@@ -84,6 +88,18 @@ const onSubmit = handleSubmit((values) => {
             <InputError :message="errors.type" />
         </div>
 
+        <div class="space-y-2">
+            <Label for="bank">Bank</Label>
+            <Input
+                id="bank"
+                v-model="bank"
+                v-bind="bankAttrs"
+                placeholder="e.g., Bank of America"
+                :disabled="isSubmitting"
+            />
+            <InputError :message="errors.bank" />
+        </div>
+
         <div v-if="!isEdit" class="space-y-2">
             <Label for="initial_balance">Initial Balance</Label>
             <Input
@@ -115,7 +131,7 @@ const onSubmit = handleSubmit((values) => {
             <Button
                 type="button"
                 variant="outline"
-                @click="$router.back()"
+                @click="router.visit('/accounts')"
                 :disabled="isSubmitting"
             >
                 Cancel

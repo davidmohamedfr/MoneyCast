@@ -4,9 +4,17 @@ import AccountForm from '@/components/account/AccountForm.vue';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 
 const handleSubmit = (values: any) => {
-    router.post('/accounts', values);
+    router.post('/accounts', values, {
+        onSuccess: () => {
+            toast.success('Account created successfully');
+        },
+        onError: () => {
+            toast.error('Failed to create account. Please check the form and try again.');
+        },
+    });
 };
 </script>
 

@@ -1,35 +1,40 @@
 <script setup lang="ts">
+import AccountStats from '@/components/account/AccountStats.vue';
 import Heading from '@/components/Heading.vue';
+import TransactionFilters from '@/components/transaction/TransactionFilters.vue';
+import TransactionList from '@/components/transaction/TransactionList.vue';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
-import type { Account } from '@/types/account';
+import type {
+    Account,
+    TransactionFilters as Filters,
+    AccountStats as Stats,
+} from '@/types/account';
+import type { Transaction } from '@/types/transaction';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { computed } from 'vue';
+
+interface PaginatedTransactions {
+    data: Transaction[];
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+    links: Array<{ url: string | null; label: string; active: boolean }>;
+}
 
 interface PageProps {
     account: Account;
-    current_balance: number;
-    projected_balance: number;
+    transactions: PaginatedTransactions;
+    stats: Stats;
+    filters: Filters;
 }
 
 const props = defineProps<PageProps>();
 
-const currencyFormatter = computed(() => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: props.account.currency,
-    });
-});
-
-const formatCurrency = (amount: number) => {
-    return currencyFormatter.value.format(amount);
-};
-
-const deleteAccount = () => {
-    if (confirm('Are you sure you want to delete this account?')) {
-        router.delete(`/accounts/${props.account.id}`);
+const archiveAccount = () => {
+    if (confirm('Are you sure you want to archive this account?')) {
+        router.post(`/accounts/${props.account.id}/archive`);
     }
 };
 </script>
@@ -40,74 +45,33 @@ const deleteAccount = () => {
 
         <div class="space-y-6">
             <div class="flex items-center justify-between">
-                <div>
+                <div class="space-y-2">
                     <Heading>{{ account.name }}</Heading>
-                    <Badge variant="outline" class="mt-2">{{
-                        account.type
-                    }}</Badge>
+                    <div class="flex items-center gap-2">
+                        <Badge variant="outline">{{ account.type }}</Badge>
+                        <span class="text-sm text-muted-foreground">{{
+                            account.bank
+                        }}</span>
+                    </div>
                 </div>
                 <div class="flex gap-2">
                     <Link :href="`/accounts/${account.id}/edit`">
                         <Button variant="outline">Edit</Button>
                     </Link>
-                    <Button variant="destructive" @click="deleteAccount"
-                        >Delete</Button
-                    >
+                    <Button variant="destructive" @click="archiveAccount">
+                        Archive
+                    </Button>
                 </div>
             </div>
 
-            <div class="grid gap-4 md:grid-cols-3">
-                <Card>
-                    <CardHeader>
-                        <CardTitle
-                            class="text-sm font-medium text-muted-foreground"
-                            >Initial Balance</CardTitle
-                        >
-                    </CardHeader>
-                    <CardContent>
-                        <p class="text-2xl font-bold">
-                            {{ formatCurrency(account.initial_balance) }}
-                        </p>
-                    </CardContent>
-                </Card>
+            <AccountStats :stats="stats" :currency="account.currency" />
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle
-                            class="text-sm font-medium text-muted-foreground"
-                            >Current Balance</CardTitle
-                        >
-                    </CardHeader>
-                    <CardContent>
-                        <p class="text-2xl font-bold">
-                            {{ formatCurrency(current_balance) }}
-                        </p>
-                    </CardContent>
-                </Card>
+            <TransactionFilters :filters="filters" :account-id="account.id" />
 
-                <Card>
-                    <CardHeader>
-                        <CardTitle
-                            class="text-sm font-medium text-muted-foreground"
-                            >Projected Balance</CardTitle
-                        >
-                    </CardHeader>
-                    <CardContent>
-                        <p class="text-2xl font-bold">
-                            {{ formatCurrency(projected_balance) }}
-                        </p>
-                    </CardContent>
-                </Card>
+            <div class="space-y-4">
+                <h2 class="text-xl font-semibold">Transactions</h2>
+                <TransactionList :transactions="transactions" />
             </div>
-
-            <Card>
-                <CardHeader>
-                    <CardTitle>Transaction History</CardTitle>
-                </CardHeader>
-                <CardContent>
-                    <p class="text-muted-foreground">No transactions yet</p>
-                </CardContent>
-            </Card>
         </div>
     </AppLayout>
 </template>

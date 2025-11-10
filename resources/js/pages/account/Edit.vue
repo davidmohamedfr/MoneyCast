@@ -5,13 +5,21 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { Account } from '@/types/account';
 import { Head, router } from '@inertiajs/vue3';
+import { toast } from 'vue-sonner';
 
 const props = defineProps<{
     account: Account;
 }>();
 
 const handleSubmit = (values: any) => {
-    router.put(`/accounts/${props.account.id}`, values);
+    router.put(`/accounts/${props.account.id}`, values, {
+        onSuccess: () => {
+            toast.success('Account updated successfully');
+        },
+        onError: () => {
+            toast.error('Failed to update account. Please check the form and try again.');
+        },
+    });
 };
 </script>
 

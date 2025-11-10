@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import AccountCard from '@/components/account/AccountCard.vue';
+import AccountList from '@/components/account/AccountList.vue';
+import ArchivedAccountsSection from '@/components/account/ArchivedAccountsSection.vue';
 import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
 import { Button } from '@/components/ui/button';
+import { useFormatCurrency } from '@/composables/useFormatCurrency';
 import AppLayout from '@/layouts/AppLayout.vue';
 import type { AccountWithBalance } from '@/types/account';
 import { Head, Link } from '@inertiajs/vue3';
@@ -10,9 +12,12 @@ import { computed } from 'vue';
 
 interface PageProps {
     accounts: AccountWithBalance[];
+    archivedAccounts: AccountWithBalance[];
 }
 
 const props = defineProps<PageProps>();
+
+const { formatCurrency } = useFormatCurrency();
 
 const totalCurrentBalance = computed(() => {
     return props.accounts.reduce((sum, acc) => sum + acc.current_balance, 0);
@@ -21,17 +26,6 @@ const totalCurrentBalance = computed(() => {
 const totalProjectedBalance = computed(() => {
     return props.accounts.reduce((sum, acc) => sum + acc.projected_balance, 0);
 });
-
-const currencyFormatter = computed(() => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'EUR',
-    });
-});
-
-const formatCurrency = (amount: number) => {
-    return currencyFormatter.value.format(amount);
-};
 </script>
 
 <template>
@@ -46,7 +40,7 @@ const formatCurrency = (amount: number) => {
                 </Link>
             </div>
 
-            <div v-if="accounts.length > 0" class="space-y-6">
+            <div v-if="accounts.length > 0" class="space-y-8">
                 <div class="grid gap-4 md:grid-cols-2">
                     <div class="rounded-lg border p-4">
                         <p class="text-sm text-muted-foreground">
@@ -66,13 +60,11 @@ const formatCurrency = (amount: number) => {
                     </div>
                 </div>
 
-                <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                    <AccountCard
-                        v-for="accountData in accounts"
-                        :key="accountData.account.id"
-                        :account-data="accountData"
-                    />
-                </div>
+                <AccountList :accounts="accounts" />
+
+                <ArchivedAccountsSection
+                    :archived-accounts="archivedAccounts"
+                />
             </div>
 
             <EmptyState

@@ -5,9 +5,10 @@ export const accountSchema = z.object({
     type: z.enum(['checking', 'savings', 'credit'], {
         errorMap: () => ({ message: 'Please select a valid account type' }),
     }),
-    initial_balance: z
-        .number({ required_error: 'Initial balance is required' })
-        .min(0, 'Initial balance must be positive'),
+    bank: z.string().min(1, 'Bank name is required').max(255),
+    initial_balance: z.number({
+        required_error: 'Initial balance is required',
+    }),
     currency: z
         .string()
         .length(3, 'Currency must be 3 characters')
@@ -19,6 +20,7 @@ export const accountUpdateSchema = z.object({
     type: z.enum(['checking', 'savings', 'credit'], {
         errorMap: () => ({ message: 'Please select a valid account type' }),
     }),
+    bank: z.string().min(1, 'Bank name is required').max(255),
 });
 
 export type AccountFormValues = z.infer<typeof accountSchema>;
