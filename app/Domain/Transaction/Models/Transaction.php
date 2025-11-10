@@ -5,6 +5,7 @@ namespace App\Domain\Transaction\Models;
 use App\Domain\Account\Models\Account;
 use App\Domain\Category\Models\Category;
 use App\Models\User;
+use Database\Factories\TransactionFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -49,5 +50,10 @@ class Transaction extends Model
     public function relatedTransaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class, 'related_transaction_id');
+    }
+
+    protected static function newFactory()
+    {
+        return TransactionFactory::new();
     }
 }
