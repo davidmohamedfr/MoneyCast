@@ -30,7 +30,7 @@ const isSearching = ref(false);
 let searchTimeout: ReturnType<typeof setTimeout>;
 watch(
     () => localFilters.value.search,
-    (newSearch) => {
+    () => {
         clearTimeout(searchTimeout);
         searchTimeout = setTimeout(() => {
             applyFilters();

@@ -26,7 +26,7 @@ interface PageProps {
     categories?: Array<{ id: number; name: string }>;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
+ 
 const props = defineProps<PageProps>();
 
 // Undo functionality - stores pending deletion

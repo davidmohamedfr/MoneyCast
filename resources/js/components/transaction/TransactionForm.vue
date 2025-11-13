@@ -18,7 +18,6 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
-import { Separator } from '@/components/ui/separator';
 import { transactionSchema } from '@/lib/validation/transaction';
 import type { Account } from '@/types/account';
 import type { Category } from '@/types/category';

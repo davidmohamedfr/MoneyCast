@@ -62,7 +62,7 @@ class TransactionRepository implements TransactionRepositoryInterface
             if (isset($filters['search'])) {
                 $query->where(function ($q) use ($filters) {
                     $q->where('payee', 'like', '%'.$filters['search'].'%')
-                      ->orWhere('description', 'like', '%'.$filters['search'].'%');
+                        ->orWhere('description', 'like', '%'.$filters['search'].'%');
                 });
             }
 
