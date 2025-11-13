@@ -12,7 +12,7 @@ interface KeyboardShortcut {
 
 export function useKeyboardShortcuts(
     shortcuts: KeyboardShortcut[] = [],
-    options: { enabled?: boolean } = {}
+    options: { enabled?: boolean } = {},
 ) {
     const enabled = ref(options.enabled ?? true);
 
