@@ -17,5 +17,6 @@ class TransactionData extends Data
         public ?string $notes = null,
         public ?int $related_transaction_id = null,
         public ?int $user_id = null,
+        public bool $is_opening_balance = false,
     ) {}
 }

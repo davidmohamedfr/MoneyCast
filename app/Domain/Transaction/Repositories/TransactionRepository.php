@@ -22,6 +22,7 @@ class TransactionRepository implements TransactionRepositoryInterface
             'date' => $data->date,
             'notes' => $data->notes,
             'related_transaction_id' => $data->related_transaction_id,
+            'is_opening_balance' => $data->is_opening_balance,
         ]);
     }
 
@@ -84,6 +85,10 @@ class TransactionRepository implements TransactionRepositoryInterface
 
             if (isset($filters['end_date'])) {
                 $query->whereDate('date', '<=', $filters['end_date']);
+            }
+
+            if (isset($filters['exclude_opening_balance']) && $filters['exclude_opening_balance']) {
+                $query->where('is_opening_balance', false);
             }
         }
 

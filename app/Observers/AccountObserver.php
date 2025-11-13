@@ -33,7 +33,8 @@ class AccountObserver
                 description: 'Initial account balance',
                 category_id: null,
                 notes: null,
-                related_transaction_id: null
+                related_transaction_id: null,
+                is_opening_balance: true
             );
 
             $this->transactionRepository->create($transactionData);

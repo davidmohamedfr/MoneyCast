@@ -26,12 +26,14 @@ class Transaction extends Model
         'date',
         'notes',
         'related_transaction_id',
+        'is_opening_balance',
     ];
 
     protected $casts = [
         'amount' => 'decimal:4',
         'date' => 'date',
         'type' => TransactionType::class,
+        'is_opening_balance' => 'boolean',
     ];
 
     public function user(): BelongsTo
