@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import Icon from '@/components/Icon.vue';
 import { Button } from '@/components/ui/button';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import type { TransactionFilters } from '@/types/account';
@@ -12,8 +14,11 @@ const props = defineProps<{
 }>();
 
 const localFilters = ref<TransactionFilters>({ ...props.filters });
+const isApplyingFilters = ref(false);
+const isClearingFilters = ref(false);
 
 const applyFilters = () => {
+    isApplyingFilters.value = true;
     router.get(
         `/accounts/${props.accountId}`,
         {
@@ -28,13 +33,26 @@ const applyFilters = () => {
             preserveState: true,
             preserveScroll: true,
             only: ['transactions', 'filters'],
+            onFinish: () => {
+                isApplyingFilters.value = false;
+            },
         },
     );
 };
 
 const clearFilters = () => {
+    isClearingFilters.value = true;
     localFilters.value = {};
-    router.get(`/accounts/${props.accountId}`, {}, { preserveState: true });
+    router.get(
+        `/accounts/${props.accountId}`,
+        {},
+        {
+            preserveState: true,
+            onFinish: () => {
+                isClearingFilters.value = false;
+            },
+        },
+    );
 };
 </script>
 
@@ -75,26 +93,50 @@ const clearFilters = () => {
 
             <div class="space-y-2">
                 <Label for="start_date">From Date</Label>
-                <Input
+                <DatePicker
                     id="start_date"
                     v-model="localFilters.start_date"
-                    type="date"
+                    placeholder="Select start date"
                 />
             </div>
 
             <div class="space-y-2">
                 <Label for="end_date">To Date</Label>
-                <Input
+                <DatePicker
                     id="end_date"
                     v-model="localFilters.end_date"
-                    type="date"
+                    :min-date="localFilters.start_date ? new Date(localFilters.start_date) : null"
+                    placeholder="Select end date"
                 />
             </div>
         </div>
 
         <div class="flex justify-end gap-2">
-            <Button variant="outline" @click="clearFilters">Clear</Button>
-            <Button @click="applyFilters">Apply Filters</Button>
+            <Button
+                variant="outline"
+                @click="clearFilters"
+                :disabled="isClearingFilters || isApplyingFilters"
+            >
+                <Icon
+                    v-if="isClearingFilters"
+                    name="loader-circle"
+                    class="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                />
+                Clear
+            </Button>
+            <Button
+                @click="applyFilters"
+                :disabled="isApplyingFilters || isClearingFilters"
+            >
+                <Icon
+                    v-if="isApplyingFilters"
+                    name="loader-circle"
+                    class="mr-2 h-4 w-4 animate-spin"
+                    aria-hidden="true"
+                />
+                Apply Filters
+            </Button>
         </div>
     </div>
 </template>

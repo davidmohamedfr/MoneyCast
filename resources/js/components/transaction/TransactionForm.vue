@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CreateCategoryDialog from '@/components/category/CreateCategoryDialog.vue';
 import Icon from '@/components/Icon.vue';
 import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
@@ -7,6 +8,7 @@ import {
     CollapsibleContent,
     CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { DatePicker } from '@/components/ui/date-picker';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import {
@@ -16,6 +18,7 @@ import {
     SelectTrigger,
     SelectValue,
 } from '@/components/ui/select';
+import { Separator } from '@/components/ui/separator';
 import { transactionSchema } from '@/lib/validation/transaction';
 import type { Account } from '@/types/account';
 import type { Category } from '@/types/category';
@@ -52,7 +55,7 @@ const { errors, defineField, handleSubmit, isSubmitting, values } = useForm({
               type: props.transaction.type,
               amount: parseFloat(props.transaction.amount),
               payee: props.transaction.payee,
-              date: props.transaction.date,
+              date: props.transaction.date.split('T')[0], // Extract YYYY-MM-DD from ISO datetime
               category_id: props.transaction.category_id,
               description: props.transaction.description,
               notes: props.transaction.notes,
@@ -92,6 +95,23 @@ const showOptionalFields = ref(
 const toggleOptionalFields = (open: boolean) => {
     showOptionalFields.value = open;
     sessionStorage.setItem('transaction-form-optional-fields', String(open));
+};
+
+// Category creation dialog state
+const showCreateCategoryDialog = ref(false);
+
+const handleCategoryCreated = (newCategory: Category) => {
+    // Auto-select the newly created category
+    categoryId.value = newCategory.id;
+};
+
+const openCreateCategoryDialog = () => {
+    // Expand optional fields section if collapsed
+    if (!showOptionalFields.value) {
+        showOptionalFields.value = true;
+        sessionStorage.setItem('transaction-form-optional-fields', 'true');
+    }
+    showCreateCategoryDialog.value = true;
 };
 
 const onSubmit = handleSubmit((values) => {
@@ -164,21 +184,22 @@ const onSubmit = handleSubmit((values) => {
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="type">Type</Label>
-                    <Select
+                    <Label for="type">
+                        Type
+                        <span class="text-destructive" aria-label="required">*</span>
+                    </Label>
+                    <select
+                        id="type"
                         v-model="type"
                         v-bind="typeAttrs"
                         :disabled="isSubmitting"
+                        class="border-input focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none"
                     >
-                        <SelectTrigger id="type">
-                            <SelectValue placeholder="Select type" />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem value="income">Income</SelectItem>
-                            <SelectItem value="expense">Expense</SelectItem>
-                            <SelectItem value="transfer">Transfer</SelectItem>
-                        </SelectContent>
-                    </Select>
+                        <option value="">Select type</option>
+                        <option value="income">Income</option>
+                        <option value="expense">Expense</option>
+                        <option value="transfer">Transfer</option>
+                    </select>
                     <InputError
                         :message="errors.type"
                         help-text="Income (money in) or Expense (money out)"
@@ -186,7 +207,10 @@ const onSubmit = handleSubmit((values) => {
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="amount">Amount</Label>
+                    <Label for="amount">
+                        Amount
+                        <span class="text-destructive" aria-label="required">*</span>
+                    </Label>
                     <Input
                         id="amount"
                         v-model="amount"
@@ -196,6 +220,8 @@ const onSubmit = handleSubmit((values) => {
                         min="0.01"
                         placeholder="0.00"
                         :disabled="isSubmitting"
+                        required
+                        aria-required="true"
                     />
                     <InputError
                         :message="errors.amount"
@@ -204,13 +230,18 @@ const onSubmit = handleSubmit((values) => {
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="payee">Payee</Label>
+                    <Label for="payee">
+                        Payee
+                        <span class="text-destructive" aria-label="required">*</span>
+                    </Label>
                     <Input
                         id="payee"
                         v-model="payee"
                         v-bind="payeeAttrs"
                         placeholder="e.g., Grocery Store"
                         :disabled="isSubmitting"
+                        required
+                        aria-required="true"
                     />
                     <InputError
                         :message="errors.payee"
@@ -219,13 +250,19 @@ const onSubmit = handleSubmit((values) => {
                 </div>
 
                 <div class="space-y-2">
-                    <Label for="date">Date</Label>
-                    <Input
+                    <Label for="date">
+                        Date
+                        <span class="text-destructive" aria-label="required">*</span>
+                    </Label>
+                    <DatePicker
                         id="date"
                         v-model="date"
                         v-bind="dateAttrs"
-                        type="date"
                         :disabled="isSubmitting"
+                        :default-value="new Date()"
+                        placeholder="Select date"
+                        required
+                        aria-required="true"
                     />
                     <InputError
                         :message="errors.date"
@@ -265,32 +302,80 @@ const onSubmit = handleSubmit((values) => {
                 </Button>
             </CollapsibleTrigger>
             <CollapsibleContent class="space-y-4 pt-4">
-                <div v-if="filteredCategories.length > 0" class="space-y-2">
+                <!-- Category selection with inline creation -->
+                <div
+                    v-if="
+                        values.type &&
+                        values.type !== 'transfer' &&
+                        filteredCategories.length > 0
+                    "
+                    class="space-y-2"
+                >
                     <Label for="category_id">Category</Label>
-                    <Select
-                        v-model="categoryId"
-                        v-bind="categoryIdAttrs"
-                        :disabled="isSubmitting"
-                    >
-                        <SelectTrigger id="category_id">
-                            <SelectValue
-                                placeholder="Select category (optional)"
-                            />
-                        </SelectTrigger>
-                        <SelectContent>
-                            <SelectItem
+                    <div class="flex gap-2">
+                        <select
+                            id="category_id"
+                            v-model="categoryId"
+                            v-bind="categoryIdAttrs"
+                            :disabled="isSubmitting"
+                            class="border-input focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none"
+                        >
+                            <option :value="null">Select category (optional)</option>
+                            <option
                                 v-for="category in filteredCategories"
                                 :key="category.id"
                                 :value="category.id"
                             >
                                 {{ category.name }}
-                            </SelectItem>
-                        </SelectContent>
-                    </Select>
+                            </option>
+                        </select>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            @click="openCreateCategoryDialog"
+                            :disabled="isSubmitting"
+                            class="shrink-0"
+                        >
+                            <Icon name="plus" class="h-4 w-4" />
+                        </Button>
+                    </div>
                     <InputError
                         :message="errors.category_id"
                         help-text="Helps organize and analyze your spending"
                     />
+                </div>
+
+                <!-- Show create category option when no categories exist for this type -->
+                <div
+                    v-else-if="values.type && values.type !== 'transfer'"
+                    class="space-y-2"
+                >
+                    <Label>Category</Label>
+                    <div
+                        class="rounded-lg border border-dashed border-muted bg-muted/10 p-4"
+                    >
+                        <p
+                            class="mb-3 text-sm text-muted-foreground"
+                            role="status"
+                        >
+                            No {{ values.type }} categories available yet
+                        </p>
+                        <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            @click="openCreateCategoryDialog"
+                            :disabled="isSubmitting"
+                        >
+                            <Icon
+                                name="plus"
+                                class="mr-2 h-4 w-4"
+                                aria-hidden="true"
+                            />
+                            Create First Category
+                        </Button>
+                    </div>
                 </div>
 
                 <div class="space-y-2">
@@ -335,5 +420,12 @@ const onSubmit = handleSubmit((values) => {
                 {{ isEdit ? 'Update Transaction' : 'Create Transaction' }}
             </Button>
         </div>
+
+        <!-- Inline Category Creation Dialog -->
+        <CreateCategoryDialog
+            v-model:open="showCreateCategoryDialog"
+            :type="values.type || 'expense'"
+            @created="handleCategoryCreated"
+        />
     </form>
 </template>
