@@ -59,6 +59,13 @@ class TransactionRepository implements TransactionRepositoryInterface
             ->orderBy('created_at', 'desc');
 
         if ($filters) {
+            if (isset($filters['search'])) {
+                $query->where(function ($q) use ($filters) {
+                    $q->where('payee', 'like', '%'.$filters['search'].'%')
+                      ->orWhere('description', 'like', '%'.$filters['search'].'%');
+                });
+            }
+
             if (isset($filters['account_id'])) {
                 $query->where('account_id', $filters['account_id']);
             }

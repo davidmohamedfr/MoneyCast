@@ -20,3 +20,4 @@ Route::get('dashboard', function (DashboardService $dashboardService) {
 require __DIR__.'/settings.php';
 require __DIR__.'/account.php';
 require __DIR__.'/transaction.php';
+require __DIR__.'/category.php';

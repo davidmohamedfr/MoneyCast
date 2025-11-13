@@ -13,9 +13,28 @@ class AccountService
         private TransactionService $transactionService
     ) {}
 
-    public function getAccountsWithBalances(int $userId): array
+    public function getAccountsWithBalances(int $userId, array $filters = []): array
     {
         $accounts = $this->repository->getActiveForUser($userId);
+
+        // Apply search filter
+        if (! empty($filters['search'])) {
+            $search = strtolower($filters['search']);
+            $accounts = $accounts->filter(function (Account $account) use ($search) {
+                return str_contains(strtolower($account->name), $search) ||
+                       str_contains(strtolower($account->bank), $search);
+            });
+        }
+
+        // Apply type filter
+        if (! empty($filters['type'])) {
+            $accounts = $accounts->where('type', $filters['type']);
+        }
+
+        // Apply bank filter
+        if (! empty($filters['bank'])) {
+            $accounts = $accounts->where('bank', $filters['bank']);
+        }
 
         return $accounts->map(function (Account $account) {
             return [
@@ -23,7 +42,7 @@ class AccountService
                 'current_balance' => $this->calculateCurrentBalance($account),
                 'projected_balance' => $this->calculateProjectedBalance($account),
             ];
-        })->toArray();
+        })->values()->toArray();
     }
 
     public function getArchivedAccountsWithBalances(int $userId): array

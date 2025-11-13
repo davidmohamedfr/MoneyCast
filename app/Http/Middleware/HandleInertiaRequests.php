@@ -24,6 +24,11 @@ class HandleInertiaRequests extends Middleware
      */
     public function version(Request $request): ?string
     {
+        // Force fresh page loads on every navigation during development
+        if (app()->environment('local')) {
+            return (string) time();
+        }
+
         return parent::version($request);
     }
 

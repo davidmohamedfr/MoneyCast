@@ -30,10 +30,21 @@ class TransactionController extends Controller
 
     public function index(): Response
     {
-        $transactions = $this->transactionService->getTransactionsForUser(auth()->id());
+        $filters = array_filter([
+            'search' => request('search'),
+            'type' => request('type'),
+            'category_id' => request('category_id'),
+            'start_date' => request('start_date'),
+            'end_date' => request('end_date'),
+        ]);
+
+        $transactions = $this->transactionService->getTransactionsForUser(auth()->id(), $filters);
+        $categories = $this->categoryRepository->all();
 
         return Inertia::render('transaction/Index', [
             'transactions' => $transactions,
+            'filters' => $filters,
+            'categories' => $categories,
         ]);
     }
 

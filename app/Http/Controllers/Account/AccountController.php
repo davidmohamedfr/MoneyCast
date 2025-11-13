@@ -28,12 +28,19 @@ class AccountController extends Controller
 
     public function index(): Response
     {
-        $accounts = $this->accountService->getAccountsWithBalances(auth()->id());
+        $filters = array_filter([
+            'search' => request('search'),
+            'type' => request('type'),
+            'bank' => request('bank'),
+        ]);
+
+        $accounts = $this->accountService->getAccountsWithBalances(auth()->id(), $filters);
         $archivedAccounts = $this->accountService->getArchivedAccountsWithBalances(auth()->id());
 
         return Inertia::render('account/Index', [
             'accounts' => $accounts,
             'archivedAccounts' => $archivedAccounts,
+            'filters' => $filters,
         ]);
     }
 

@@ -18,8 +18,9 @@ class DashboardService
     public function getDashboardData(int $userId): array
     {
         $accounts = $this->accountService->getAccountsWithBalances($userId);
-        $recentTransactions = $this->getRecentTransactions($userId, 10);
+        $recentTransactions = $this->getRecentTransactions($userId, 3);
         $monthlyStats = $this->getMonthlyStats($userId);
+        $categorySpending = $this->getCategorySpending($userId);
         $totalBalance = $this->calculateTotalBalance($accounts);
 
         return [
@@ -32,6 +33,7 @@ class DashboardService
                 'net' => (float) round($monthlyStats['net'], 2),
                 'transaction_count' => $monthlyStats['transaction_count'],
             ],
+            'category_spending' => $categorySpending,
         ];
     }
 
@@ -86,5 +88,56 @@ class DashboardService
             'net' => (float) ($income - $expenses),
             'transaction_count' => $transactions->count(),
         ];
+    }
+
+    private function getCategorySpending(int $userId): array
+    {
+        $startDate = now()->startOfMonth()->format('Y-m-d');
+        $endDate = now()->endOfMonth()->format('Y-m-d');
+
+        $transactions = $this->transactionRepository->getAllForUser($userId, [
+            'start_date' => $startDate,
+            'end_date' => $endDate,
+            'type' => TransactionType::Expense->value,
+        ]);
+
+        // Exclude opening balance transactions
+        $transactions = $transactions->filter(fn ($transaction) => $transaction->payee !== 'Opening Balance');
+
+        $categorySpending = [];
+
+        foreach ($transactions as $transaction) {
+            if (! $transaction->category) {
+                continue;
+            }
+
+            $categoryName = $transaction->category->name;
+
+            if (! isset($categorySpending[$categoryName])) {
+                $categorySpending[$categoryName] = [
+                    'amount' => 0.0,
+                    'count' => 0,
+                ];
+            }
+
+            $categorySpending[$categoryName]['amount'] += (float) $transaction->amount;
+            $categorySpending[$categoryName]['count']++;
+        }
+
+        // Sort by amount descending and format for chart
+        uasort($categorySpending, fn ($a, $b) => $b['amount'] <=> $a['amount']);
+
+        $formattedData = [];
+        foreach ($categorySpending as $category => $data) {
+            $formattedData[] = [
+                'category' => $category,
+                'amount' => (float) round($data['amount'], 2),
+                'transaction_count' => $data['count'],
+                'color' => '',  // Will be assigned in frontend
+            ];
+        }
+
+        // Limit to top 8 categories
+        return array_slice($formattedData, 0, 8);
     }
 }
