@@ -84,15 +84,25 @@ class AccountController extends Controller
 
     public function store(StoreAccountRequest $request): RedirectResponse
     {
-        $validated = $request->validated();
-        $validated['user_id'] = auth()->id();
+        try {
+            $validated = $request->validated();
+            $validated['user_id'] = auth()->id();
 
-        $data = AccountData::from($validated);
+            $data = AccountData::from($validated);
 
-        $this->createAction->execute($data);
+            $this->createAction->execute($data);
 
-        return redirect()->route('accounts.index')
-            ->with('success', 'Account created successfully');
+            return redirect()->route('accounts.index')
+                ->with('success', 'Account created successfully');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Failed to create account. Please try again.');
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'An unexpected error occurred. Please try again.');
+        }
     }
 
     public function edit(Account $account): Response
@@ -124,8 +134,15 @@ class AccountController extends Controller
 
             return redirect()->route('accounts.index')
                 ->with('success', 'Account deleted successfully');
+        } catch (\App\Domain\Account\Exceptions\AccountHasTransactionsException $e) {
+            return redirect()->route('accounts.index')
+                ->with('error', 'Cannot delete account with existing transactions. Please delete all transactions first.');
+        } catch (\Illuminate\Database\QueryException $e) {
+            return redirect()->route('accounts.index')
+                ->with('error', 'Failed to delete account. Please try again.');
         } catch (\Exception $e) {
-            return redirect()->route('accounts.index')->with('error', $e->getMessage());
+            return redirect()->route('accounts.index')
+                ->with('error', 'An unexpected error occurred while deleting the account.');
         }
     }
 }
