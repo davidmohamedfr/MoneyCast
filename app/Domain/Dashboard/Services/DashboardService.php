@@ -50,10 +50,9 @@ class DashboardService
 
     private function getRecentTransactions(int $userId, int $limit = 10): array
     {
-        $transactions = $this->transactionRepository->getAllForUser($userId);
-
-        // Exclude opening balance transactions from recent transactions
-        $transactions = $transactions->filter(fn ($transaction) => $transaction->payee !== 'Opening Balance');
+        $transactions = $this->transactionRepository->getAllForUser($userId, [
+            'exclude_opening_balance' => true,
+        ]);
 
         return $transactions->take($limit)->toArray();
     }
@@ -66,10 +65,8 @@ class DashboardService
         $transactions = $this->transactionRepository->getAllForUser($userId, [
             'start_date' => $startDate,
             'end_date' => $endDate,
+            'exclude_opening_balance' => true,
         ]);
-
-        // Exclude opening balance transactions from monthly stats
-        $transactions = $transactions->filter(fn ($transaction) => $transaction->payee !== 'Opening Balance');
 
         $income = 0.0;
         $expenses = 0.0;
@@ -99,10 +96,8 @@ class DashboardService
             'start_date' => $startDate,
             'end_date' => $endDate,
             'type' => TransactionType::Expense->value,
+            'exclude_opening_balance' => true,
         ]);
-
-        // Exclude opening balance transactions
-        $transactions = $transactions->filter(fn ($transaction) => $transaction->payee !== 'Opening Balance');
 
         $categorySpending = [];
 
