@@ -18,7 +18,7 @@ class DashboardService
     public function getDashboardData(int $userId): array
     {
         $accounts = $this->accountService->getAccountsWithBalances($userId);
-        $recentTransactions = $this->getRecentTransactions($userId, 3);
+        $recentTransactions = $this->getRecentTransactions($userId, 10);
         $monthlyStats = $this->getMonthlyStats($userId);
         $categorySpending = $this->getCategorySpending($userId);
         $totalBalance = $this->calculateTotalBalance($accounts);

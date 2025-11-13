@@ -191,7 +191,7 @@ test('complete expense tracking workflow', function () {
     // Check account balance
     $response = get(route('accounts.show', $account));
     $response->assertInertia(fn ($page) => $page
-        ->where('stats.current_balance', 1880) // 2000 - 120 (only past transactions)
+        ->where('stats.current_balance', 1700) // 2000 - 300 (only past transactions: 120 + 180)
         // Note: projected_balance is not returned by show endpoint
     );
 });
