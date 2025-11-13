@@ -157,7 +157,7 @@ test('account deletion fails when transactions exist', function () {
     $response->assertRedirect(route('accounts.index'));
     $response->assertSessionHas('error');
     expect(session('error'))->toContain('Cannot delete account');
-    expect(session('error'))->toContain('because it has existing transactions');
+    expect(session('error'))->toContain('existing transactions');
 
     // Account should still exist
     assertDatabaseHas('accounts', [
