@@ -20,7 +20,11 @@ const props = withDefaults(defineProps<Props>(), {
 const className = computed(() => cn('h-4 w-4', props.class));
 
 const icon = computed(() => {
-    const iconName = props.name.charAt(0).toUpperCase() + props.name.slice(1);
+    // Convert kebab-case to PascalCase (e.g., "chevron-left" → "ChevronLeft")
+    const iconName = props.name
+        .split('-')
+        .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+        .join('');
     return (icons as Record<string, any>)[iconName];
 });
 </script>

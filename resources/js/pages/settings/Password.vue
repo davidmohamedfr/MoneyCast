@@ -23,7 +23,7 @@ const breadcrumbItems: BreadcrumbItem[] = [
 ];
 
 // VeeValidate form setup
-const { errors: clientErrors } = useForm({
+useForm({
     validationSchema: toTypedSchema(passwordUpdateSchema),
 });
 

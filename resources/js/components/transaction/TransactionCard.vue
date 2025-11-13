@@ -141,12 +141,63 @@ const confirmDelete = () => {
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Delete Transaction</DialogTitle>
+                        <DialogTitle>Delete Transaction?</DialogTitle>
                         <DialogDescription>
                             Are you sure you want to delete this transaction?
                             This action cannot be undone.
                         </DialogDescription>
                     </DialogHeader>
+
+                    <!-- Transaction details for context - ADHD/Autism users -->
+                    <div
+                        class="space-y-3 rounded-lg border border-destructive/30 bg-destructive/5 p-4"
+                    >
+                        <div class="flex items-start justify-between">
+                            <div class="flex-1">
+                                <p class="font-semibold text-foreground">
+                                    {{ transaction.payee }}
+                                </p>
+                                <p class="text-sm text-muted-foreground">
+                                    {{ formattedDate }}
+                                </p>
+                            </div>
+                            <Badge :class="typeColor">
+                                {{ transaction.type }}
+                            </Badge>
+                        </div>
+
+                        <div class="flex items-center justify-between border-t pt-3">
+                            <span class="text-sm text-muted-foreground">Amount:</span>
+                            <span
+                                :class="amountColorClass"
+                                class="text-lg font-semibold"
+                            >
+                                {{ transaction.type === 'expense' ? '-' : '+'
+                                }}{{ formattedAmount }}
+                            </span>
+                        </div>
+
+                        <div
+                            v-if="transaction.account"
+                            class="flex items-center justify-between"
+                        >
+                            <span class="text-sm text-muted-foreground">Account:</span>
+                            <span class="text-sm font-medium">{{
+                                transaction.account.name
+                            }}</span>
+                        </div>
+
+                        <div
+                            v-if="transaction.category"
+                            class="flex items-center justify-between"
+                        >
+                            <span class="text-sm text-muted-foreground">Category:</span>
+                            <Badge variant="outline">{{
+                                transaction.category.name
+                            }}</Badge>
+                        </div>
+                    </div>
+
                     <DialogFooter>
                         <Button
                             variant="outline"
@@ -155,7 +206,7 @@ const confirmDelete = () => {
                             Cancel
                         </Button>
                         <Button variant="destructive" @click="confirmDelete">
-                            Delete
+                            Delete Transaction
                         </Button>
                     </DialogFooter>
                 </DialogContent>

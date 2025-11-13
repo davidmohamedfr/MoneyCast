@@ -66,7 +66,10 @@ const shortcuts = [
     {
         category: 'Help',
         items: [
-            { keys: [{ key: '?', isModifier: false }], description: 'Show Shortcuts' },
+            {
+                keys: [{ key: '?', isModifier: false }],
+                description: 'Show Shortcuts',
+            },
         ],
     },
 ];
@@ -146,9 +149,9 @@ onUnmounted(() => {
             >
                 <p class="font-medium text-foreground">Pro tip:</p>
                 <p class="mt-1">
-                    Use {{ modifierKey }} + Shift combinations for safe shortcuts that
-                    won't conflict with browser defaults. Shortcuts are automatically
-                    disabled in input fields.
+                    Use {{ modifierKey }} + Shift combinations for safe
+                    shortcuts that won't conflict with browser defaults.
+                    Shortcuts are automatically disabled in input fields.
                 </p>
             </div>
         </DialogContent>

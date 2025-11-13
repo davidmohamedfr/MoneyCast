@@ -12,7 +12,9 @@ const handleSubmit = (values: any) => {
             toast.success('Account created successfully');
         },
         onError: () => {
-            toast.error('Failed to create account. Please check the form and try again.');
+            toast.error(
+                'Failed to create account. Please check the form and try again.',
+            );
         },
     });
 };

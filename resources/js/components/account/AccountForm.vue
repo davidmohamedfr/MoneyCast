@@ -3,13 +3,6 @@ import InputError from '@/components/InputError.vue';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from '@/components/ui/select';
 import { accountSchema, accountUpdateSchema } from '@/lib/validation/account';
 import type { Account } from '@/types/account';
 import { router } from '@inertiajs/vue3';
@@ -62,42 +55,68 @@ const onSubmit = handleSubmit((values) => {
 <template>
     <form @submit="onSubmit" class="space-y-6">
         <div class="space-y-2">
-            <Label for="name">Account Name</Label>
+            <Label for="name">
+                Account Name
+                <span class="text-destructive" aria-label="required">*</span>
+            </Label>
             <Input
                 id="name"
                 v-model="name"
                 v-bind="nameAttrs"
                 placeholder="e.g., Checking Account"
                 :disabled="isSubmitting"
+                required
+                aria-required="true"
             />
-            <InputError :message="errors.name" />
+            <InputError
+                :message="errors.name"
+                help-text="Give your account a recognizable name (e.g., Main Checking, Emergency Savings)"
+            />
         </div>
 
         <div class="space-y-2">
-            <Label for="type">Account Type</Label>
-            <Select v-model="type" v-bind="typeAttrs" :disabled="isSubmitting">
-                <SelectTrigger id="type">
-                    <SelectValue placeholder="Select account type" />
-                </SelectTrigger>
-                <SelectContent>
-                    <SelectItem value="checking">Checking</SelectItem>
-                    <SelectItem value="savings">Savings</SelectItem>
-                    <SelectItem value="credit">Credit</SelectItem>
-                </SelectContent>
-            </Select>
-            <InputError :message="errors.type" />
+            <Label for="type">
+                Account Type
+                <span class="text-destructive" aria-label="required">*</span>
+            </Label>
+            <select
+                id="type"
+                v-model="type"
+                v-bind="typeAttrs"
+                :disabled="isSubmitting"
+                required
+                aria-required="true"
+                class="border-input focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none"
+            >
+                <option value="">Select account type</option>
+                <option value="checking">Checking</option>
+                <option value="savings">Savings</option>
+                <option value="credit">Credit</option>
+            </select>
+            <InputError
+                :message="errors.type"
+                help-text="Checking for daily expenses, Savings for long-term goals, Credit for credit cards"
+            />
         </div>
 
         <div class="space-y-2">
-            <Label for="bank">Bank</Label>
+            <Label for="bank">
+                Bank
+                <span class="text-destructive" aria-label="required">*</span>
+            </Label>
             <Input
                 id="bank"
                 v-model="bank"
                 v-bind="bankAttrs"
                 placeholder="e.g., Bank of America"
                 :disabled="isSubmitting"
+                required
+                aria-required="true"
             />
-            <InputError :message="errors.bank" />
+            <InputError
+                :message="errors.bank"
+                help-text="Enter the name of your financial institution"
+            />
         </div>
 
         <div v-if="!isEdit" class="space-y-2">
@@ -111,7 +130,10 @@ const onSubmit = handleSubmit((values) => {
                 placeholder="0.00"
                 :disabled="isSubmitting"
             />
-            <InputError :message="errors.initial_balance" />
+            <InputError
+                :message="errors.initial_balance"
+                help-text="Your current account balance. This helps track changes from this point forward."
+            />
         </div>
 
         <div v-if="!isEdit" class="space-y-2">
@@ -124,7 +146,10 @@ const onSubmit = handleSubmit((values) => {
                 maxlength="3"
                 :disabled="isSubmitting"
             />
-            <InputError :message="errors.currency" />
+            <InputError
+                :message="errors.currency"
+                help-text="Three-letter currency code (e.g., USD, EUR, GBP)"
+            />
         </div>
 
         <div class="flex justify-end gap-3">

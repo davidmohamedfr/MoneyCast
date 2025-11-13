@@ -17,7 +17,9 @@ const handleSubmit = (values: any) => {
             toast.success('Account updated successfully');
         },
         onError: () => {
-            toast.error('Failed to update account. Please check the form and try again.');
+            toast.error(
+                'Failed to update account. Please check the form and try again.',
+            );
         },
     });
 };

@@ -35,7 +35,7 @@ const page = usePage();
 const user = page.props.auth.user;
 
 // VeeValidate form setup
-const { errors: clientErrors } = useForm({
+useForm({
     validationSchema: toTypedSchema(profileUpdateSchema),
 });
 

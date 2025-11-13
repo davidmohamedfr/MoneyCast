@@ -2,6 +2,7 @@
 import AppLogo from '@/components/AppLogo.vue';
 import AppLogoIcon from '@/components/AppLogoIcon.vue';
 import Breadcrumbs from '@/components/Breadcrumbs.vue';
+import ThemeToggle from '@/components/ThemeToggle.vue';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
@@ -127,6 +128,10 @@ const rightNavItems: NavItem[] = [
                                     </Link>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
+                                    <div class="flex items-center justify-between px-3">
+                                        <span class="text-sm font-medium">Theme</span>
+                                        <ThemeToggle />
+                                    </div>
                                     <a
                                         v-for="item in rightNavItems"
                                         :key="item.title"
@@ -235,6 +240,9 @@ const rightNavItems: NavItem[] = [
                                 </TooltipProvider>
                             </template>
                         </div>
+
+                        <!-- Theme Toggle -->
+                        <ThemeToggle />
                     </div>
 
                     <DropdownMenu>

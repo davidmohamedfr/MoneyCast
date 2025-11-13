@@ -44,7 +44,7 @@ const codeValue = computed<string>(() => code.value.join(''));
 const pinInputContainerRef = useTemplateRef('pinInputContainerRef');
 
 // VeeValidate form setup for 2FA code
-const { errors: clientErrors } = useForm({
+useForm({
     validationSchema: toTypedSchema(twoFactorCodeSchema),
 });
 

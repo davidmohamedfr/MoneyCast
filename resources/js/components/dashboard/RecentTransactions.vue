@@ -9,24 +9,20 @@ import {
     CardHeader,
     CardTitle,
 } from '@/components/ui/card';
+import { useFormatCurrency } from '@/composables/useFormatCurrency';
 import type { Transaction } from '@/types/transaction';
 import { router } from '@inertiajs/vue3';
-import { computed } from 'vue';
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<{
     transactions: Transaction[];
 }>();
 
-const currencyFormatter = computed(() => {
-    return new Intl.NumberFormat('en-US', {
-        style: 'currency',
-        currency: 'EUR',
-    });
-});
+const { formatCurrency } = useFormatCurrency();
 
 const formatAmount = (amount: string, type: string) => {
-    const formatted = currencyFormatter.value.format(parseFloat(amount));
+    const numAmount = parseFloat(amount);
+    const formatted = formatCurrency(numAmount);
     return type === 'expense' ? `-${formatted}` : `+${formatted}`;
 };
 
@@ -91,7 +87,7 @@ const viewAllTransactions = () => {
                         >Your latest financial activity</CardDescription
                     >
                 </div>
-                <Button variant="ghost" size="sm" @click="viewAllTransactions">
+                <Button variant="gradient" size="sm" @click="viewAllTransactions">
                     View All
                 </Button>
             </div>
@@ -113,7 +109,7 @@ const viewAllTransactions = () => {
                     size="sm"
                     @click="router.visit('/transactions/create')"
                 >
-                    <Icon name="plus" class="mr-2 h-4 w-4" />
+                    <Icon name="plus" class="mr-2 h-4 w-4" aria-hidden="true" />
                     Create Transaction
                 </Button>
             </div>
@@ -122,7 +118,8 @@ const viewAllTransactions = () => {
                 <div
                     v-for="transaction in transactions"
                     :key="transaction.id"
-                    class="flex items-center justify-between rounded-lg p-3 transition-colors hover:bg-accent"
+                    class="flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-accent"
+                    @click="router.visit(`/transactions/${transaction.id}/edit`)"
                 >
                     <div class="flex min-w-0 flex-1 items-center gap-3">
                         <div
@@ -134,11 +131,11 @@ const viewAllTransactions = () => {
                                       ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
                                       : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
                             ]"
+                            :aria-label="getTypeLabel(transaction.type)"
                         >
                             <Icon
                                 :name="getTypeIcon(transaction.type)"
                                 class="h-5 w-5"
-                                aria-hidden="true"
                             />
                         </div>
 

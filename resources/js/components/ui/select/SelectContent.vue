@@ -29,7 +29,7 @@ const forwardedEmits = {
 </script>
 
 <template>
-  <SelectPortal>
+  <SelectPortal :disabled="true">
     <RekaSelectContent
       data-slot="select-content"
       :class="cn(

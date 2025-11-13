@@ -38,35 +38,35 @@ const balanceDifference = computed(() => {
                 <div class="space-y-2">
                     <CardTitle>{{ accountData.account.name }}</CardTitle>
                     <div class="flex items-center gap-2">
-                        <Badge variant="outline">{{ accountTypeLabel }}</Badge>
+                        <Badge variant="default">{{ accountTypeLabel }}</Badge>
                         <span class="text-sm text-muted-foreground">{{
                             accountData.account.bank
                         }}</span>
                     </div>
                 </div>
                 <Link :href="`/accounts/${accountData.account.id}`">
-                    <Button variant="ghost" size="sm">View Details</Button>
+                    <Button variant="gradient" size="sm">View Details</Button>
                 </Link>
             </div>
         </CardHeader>
         <CardContent>
             <div class="space-y-3">
-                <div>
-                    <p class="text-sm text-muted-foreground">Current Balance</p>
+                <div class="rounded-lg bg-muted/50 p-3">
+                    <p class="text-sm font-medium text-muted-foreground">Current Balance</p>
                     <p
-                        class="text-2xl font-bold"
+                        class="mt-1 text-2xl font-bold"
                         :class="{
-                            'text-red-600': accountData.current_balance < 0,
+                            'text-red-600 dark:text-red-500': accountData.current_balance < 0,
                         }"
                     >
                         {{ formatCurrency(accountData.current_balance) }}
                     </p>
                 </div>
-                <div>
-                    <p class="text-sm text-muted-foreground">
+                <div class="rounded-lg bg-muted/30 p-3">
+                    <p class="text-sm font-medium text-muted-foreground">
                         Projected Balance
                     </p>
-                    <p class="text-lg font-semibold">
+                    <p class="mt-1 text-lg font-semibold">
                         {{ formatCurrency(accountData.projected_balance) }}
                     </p>
                 </div>

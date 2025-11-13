@@ -17,6 +17,7 @@ interface DevUser {
     label: string;
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const props = defineProps<{
     status?: string;
     canResetPassword: boolean;
@@ -36,7 +37,9 @@ const handleDevLogin = (email: string) => {
     csrfInput.type = 'hidden';
     csrfInput.name = '_token';
     csrfInput.value =
-        document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') || '';
+        document
+            .querySelector('meta[name="csrf-token"]')
+            ?.getAttribute('content') || '';
     form.appendChild(csrfInput);
 
     // Add email

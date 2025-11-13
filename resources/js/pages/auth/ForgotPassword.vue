@@ -41,7 +41,10 @@ defineProps<{
                         autofocus
                         placeholder="email@example.com"
                     />
-                    <InputError :message="errors.email" />
+                    <InputError
+                        :message="errors.email"
+                        help-text="We'll send you a link to reset your password"
+                    />
                 </div>
 
                 <div class="my-6 flex items-center justify-start">
