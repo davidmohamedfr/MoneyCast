@@ -18,9 +18,9 @@ interface AccountRepositoryInterface
 
     public function getAllForUser(int $userId, array $with = []): Collection;
 
-    public function getActiveForUser(int $userId): Collection;
+    public function getActiveForUser(int $userId, array $with = []): Collection;
 
-    public function getArchivedForUser(int $userId): Collection;
+    public function getArchivedForUser(int $userId, array $with = []): Collection;
 
     public function hasTransactions(Account $account): bool;
 }

@@ -15,7 +15,7 @@ class AccountService
 
     public function getAccountsWithBalances(int $userId, array $filters = []): array
     {
-        $accounts = $this->repository->getActiveForUser($userId);
+        $accounts = $this->repository->getActiveForUser($userId, ['transactions']);
 
         // Apply search filter
         if (! empty($filters['search'])) {
@@ -47,7 +47,7 @@ class AccountService
 
     public function getArchivedAccountsWithBalances(int $userId): array
     {
-        $accounts = $this->repository->getArchivedForUser($userId);
+        $accounts = $this->repository->getArchivedForUser($userId, ['transactions']);
 
         return $accounts->map(function (Account $account) {
             return [

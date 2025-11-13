@@ -58,19 +58,29 @@ class AccountRepository implements AccountRepositoryInterface
         return $query->get();
     }
 
-    public function getActiveForUser(int $userId): Collection
+    public function getActiveForUser(int $userId, array $with = []): Collection
     {
-        return Account::where('user_id', $userId)
-            ->orderBy('name')
-            ->get();
+        $query = Account::where('user_id', $userId)
+            ->orderBy('name');
+
+        if (! empty($with)) {
+            $query->with($with);
+        }
+
+        return $query->get();
     }
 
-    public function getArchivedForUser(int $userId): Collection
+    public function getArchivedForUser(int $userId, array $with = []): Collection
     {
-        return Account::onlyTrashed()
+        $query = Account::onlyTrashed()
             ->where('user_id', $userId)
-            ->orderBy('name')
-            ->get();
+            ->orderBy('name');
+
+        if (! empty($with)) {
+            $query->with($with);
+        }
+
+        return $query->get();
     }
 
     public function hasTransactions(Account $account): bool
