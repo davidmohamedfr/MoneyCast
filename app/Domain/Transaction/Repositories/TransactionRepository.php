@@ -61,9 +61,11 @@ class TransactionRepository implements TransactionRepositoryInterface
 
         if ($filters) {
             if (isset($filters['search'])) {
-                $query->where(function ($q) use ($filters) {
-                    $q->where('payee', 'like', '%'.$filters['search'].'%')
-                        ->orWhere('description', 'like', '%'.$filters['search'].'%');
+                // Escape SQL wildcard characters to prevent injection
+                $search = str_replace(['%', '_'], ['\%', '\_'], $filters['search']);
+                $query->where(function ($q) use ($search) {
+                    $q->where('payee', 'like', '%'.$search.'%')
+                        ->orWhere('description', 'like', '%'.$search.'%');
                 });
             }
 
