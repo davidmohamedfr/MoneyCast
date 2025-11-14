@@ -9,6 +9,8 @@ use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
 
 class DashboardService
 {
+    private const TOP_CATEGORIES_LIMIT = 8;
+
     public function __construct(
         private AccountRepositoryInterface $accountRepository,
         private AccountService $accountService,
@@ -132,7 +134,7 @@ class DashboardService
             ];
         }
 
-        // Limit to top 8 categories
-        return array_slice($formattedData, 0, 8);
+        // Limit to top categories
+        return array_slice($formattedData, 0, self::TOP_CATEGORIES_LIMIT);
     }
 }

@@ -9,6 +9,10 @@ use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
 
 class AccountObserver
 {
+    private const OPENING_BALANCE_PAYEE = 'Opening Balance';
+
+    private const OPENING_BALANCE_DESCRIPTION = 'Initial account balance';
+
     public function __construct(
         private TransactionRepositoryInterface $transactionRepository
     ) {}
@@ -28,9 +32,9 @@ class AccountObserver
                 account_id: $account->id,
                 type: $type->value,
                 amount: $amount,
-                payee: 'Opening Balance',
+                payee: self::OPENING_BALANCE_PAYEE,
                 date: $account->created_at->format('Y-m-d'),
-                description: 'Initial account balance',
+                description: self::OPENING_BALANCE_DESCRIPTION,
                 category_id: null,
                 notes: null,
                 related_transaction_id: null,
