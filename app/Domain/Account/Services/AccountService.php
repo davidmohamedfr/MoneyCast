@@ -5,7 +5,6 @@ namespace App\Domain\Account\Services;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Repositories\AccountRepositoryInterface;
 use App\Domain\Transaction\Services\TransactionService;
-use Illuminate\Support\Facades\DB;
 
 class AccountService
 {
@@ -16,18 +15,16 @@ class AccountService
 
     public function getAccountsWithBalances(int $userId, array $filters = []): array
     {
-        return DB::transaction(function () use ($userId, $filters) {
-            // Use repository method that applies filters at query level to maintain eager loading
-            $accounts = $this->repository->getActiveForUserWithFilters($userId, $filters, ['transactions']);
+        // Use repository method that applies filters at query level to maintain eager loading
+        $accounts = $this->repository->getActiveForUserWithFilters($userId, $filters, ['transactions']);
 
-            return $accounts->map(function (Account $account) {
-                return [
-                    'account' => $account,
-                    'current_balance' => $this->calculateCurrentBalance($account),
-                    'projected_balance' => $this->calculateProjectedBalance($account),
-                ];
-            })->values()->toArray();
-        });
+        return $accounts->map(function (Account $account) {
+            return [
+                'account' => $account,
+                'current_balance' => $this->calculateCurrentBalance($account),
+                'projected_balance' => $this->calculateProjectedBalance($account),
+            ];
+        })->values()->toArray();
     }
 
     public function getArchivedAccountsWithBalances(int $userId): array
