@@ -45,12 +45,12 @@ class CreateTransferAction
             $fromAccount = $this->accountRepository->findById($fromAccountId);
             $toAccount = $this->accountRepository->findById($toAccountId);
 
-            if (! $fromAccount || $fromAccount->user_id !== $userId) {
-                throw new \InvalidArgumentException('Invalid source account');
+            if (! $fromAccount || $fromAccount->user_id !== $userId || $fromAccount->trashed()) {
+                throw new \InvalidArgumentException('Invalid or archived source account');
             }
 
-            if (! $toAccount || $toAccount->user_id !== $userId) {
-                throw new \InvalidArgumentException('Invalid destination account');
+            if (! $toAccount || $toAccount->user_id !== $userId || $toAccount->trashed()) {
+                throw new \InvalidArgumentException('Invalid or archived destination account');
             }
 
             // Create the outgoing transaction (from source account)
