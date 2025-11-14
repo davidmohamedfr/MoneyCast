@@ -22,5 +22,7 @@ interface AccountRepositoryInterface
 
     public function getArchivedForUser(int $userId, array $with = []): Collection;
 
+    public function getActiveForUserWithFilters(int $userId, array $filters = [], array $with = []): Collection;
+
     public function hasTransactions(Account $account): bool;
 }

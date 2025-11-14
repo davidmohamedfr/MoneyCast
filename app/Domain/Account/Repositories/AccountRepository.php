@@ -83,6 +83,38 @@ class AccountRepository implements AccountRepositoryInterface
         return $query->get();
     }
 
+    public function getActiveForUserWithFilters(int $userId, array $filters = [], array $with = []): Collection
+    {
+        $query = Account::where('user_id', $userId);
+
+        // Apply search filter at query level
+        if (! empty($filters['search'])) {
+            $search = strtolower($filters['search']);
+            $query->where(function ($q) use ($search) {
+                $q->whereRaw('LOWER(name) LIKE ?', ['%'.$search.'%'])
+                    ->orWhereRaw('LOWER(bank) LIKE ?', ['%'.$search.'%']);
+            });
+        }
+
+        // Apply type filter
+        if (! empty($filters['type'])) {
+            $query->where('type', $filters['type']);
+        }
+
+        // Apply bank filter
+        if (! empty($filters['bank'])) {
+            $query->where('bank', $filters['bank']);
+        }
+
+        $query->orderBy('name');
+
+        if (! empty($with)) {
+            $query->with($with);
+        }
+
+        return $query->get();
+    }
+
     public function hasTransactions(Account $account): bool
     {
         return $account->transactions()->exists();

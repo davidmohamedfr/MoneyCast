@@ -5,6 +5,7 @@ namespace App\Domain\Account\Services;
 use App\Domain\Account\Models\Account;
 use App\Domain\Account\Repositories\AccountRepositoryInterface;
 use App\Domain\Transaction\Services\TransactionService;
+use Illuminate\Support\Facades\DB;
 
 class AccountService
 {
@@ -15,34 +16,18 @@ class AccountService
 
     public function getAccountsWithBalances(int $userId, array $filters = []): array
     {
-        $accounts = $this->repository->getActiveForUser($userId, ['transactions']);
+        return DB::transaction(function () use ($userId, $filters) {
+            // Use repository method that applies filters at query level to maintain eager loading
+            $accounts = $this->repository->getActiveForUserWithFilters($userId, $filters, ['transactions']);
 
-        // Apply search filter
-        if (! empty($filters['search'])) {
-            $search = strtolower($filters['search']);
-            $accounts = $accounts->filter(function (Account $account) use ($search) {
-                return str_contains(strtolower($account->name), $search) ||
-                       str_contains(strtolower($account->bank), $search);
-            });
-        }
-
-        // Apply type filter
-        if (! empty($filters['type'])) {
-            $accounts = $accounts->where('type', $filters['type']);
-        }
-
-        // Apply bank filter
-        if (! empty($filters['bank'])) {
-            $accounts = $accounts->where('bank', $filters['bank']);
-        }
-
-        return $accounts->map(function (Account $account) {
-            return [
-                'account' => $account,
-                'current_balance' => $this->calculateCurrentBalance($account),
-                'projected_balance' => $this->calculateProjectedBalance($account),
-            ];
-        })->values()->toArray();
+            return $accounts->map(function (Account $account) {
+                return [
+                    'account' => $account,
+                    'current_balance' => $this->calculateCurrentBalance($account),
+                    'projected_balance' => $this->calculateProjectedBalance($account),
+                ];
+            })->values()->toArray();
+        });
     }
 
     public function getArchivedAccountsWithBalances(int $userId): array
