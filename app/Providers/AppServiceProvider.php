@@ -15,8 +15,11 @@ use App\Domain\Transaction\Policies\TransactionPolicy;
 use App\Domain\Transaction\Repositories\TransactionRepository;
 use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
 use App\Observers\AccountObserver;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -43,6 +46,9 @@ class AppServiceProvider extends ServiceProvider
         // Register observers
         Account::observe(AccountObserver::class);
 
+        // Configure rate limiters
+        $this->configureRateLimiting();
+
         // Preserve float types (e.g., 0.0, 1500.0) in JSON encoding
         // This ensures that floats with zero decimals are not converted to integers in JSON responses
         JsonResponse::macro('setDefaultOptions', function () {
@@ -51,6 +57,18 @@ class AppServiceProvider extends ServiceProvider
             );
 
             return $this;
+        });
+    }
+
+    /**
+     * Configure rate limiting for the application.
+     */
+    protected function configureRateLimiting(): void
+    {
+        // Rate limiter for financial operations (accounts, transactions)
+        // Limit: 10 requests per minute per user
+        RateLimiter::for('financial', function (Request $request) {
+            return Limit::perMinute(10)->by($request->user()?->id ?: $request->ip());
         });
     }
 }
