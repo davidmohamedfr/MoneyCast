@@ -14,6 +14,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Transaction\StoreTransactionRequest;
 use App\Http\Requests\Transaction\UpdateTransactionRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -106,8 +107,35 @@ class TransactionController extends Controller
 
             return redirect()->route('transactions.index')
                 ->with('success', 'Transaction deleted successfully');
+        } catch (\InvalidArgumentException $e) {
+            Log::warning('Invalid transaction deletion attempt', [
+                'user_id' => auth()->id(),
+                'transaction_id' => $transaction->id,
+                'error' => $e->getMessage(),
+            ]);
+
+            return redirect()->route('transactions.index')
+                ->with('error', $e->getMessage());
+        } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Failed to delete transaction', [
+                'user_id' => auth()->id(),
+                'transaction_id' => $transaction->id,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
+
+            return redirect()->route('transactions.index')
+                ->with('error', 'Failed to delete transaction. Please try again.');
         } catch (\Exception $e) {
-            return back()->with('error', $e->getMessage());
+            Log::error('Unexpected error deleting transaction', [
+                'user_id' => auth()->id(),
+                'transaction_id' => $transaction->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
+            return redirect()->route('transactions.index')
+                ->with('error', 'An unexpected error occurred while deleting the transaction.');
         }
     }
 }
