@@ -61,11 +61,9 @@ class TransactionRepository implements TransactionRepositoryInterface
 
         if ($filters) {
             if (isset($filters['search'])) {
-                // Escape SQL wildcard characters to prevent injection
-                $search = str_replace(['%', '_'], ['\%', '\_'], $filters['search']);
-                $query->where(function ($q) use ($search) {
-                    $q->where('payee', 'like', '%'.$search.'%')
-                        ->orWhere('description', 'like', '%'.$search.'%');
+                $query->where(function ($q) use ($filters) {
+                    $q->where('payee', 'like', '%'.$filters['search'].'%')
+                        ->orWhere('description', 'like', '%'.$filters['search'].'%');
                 });
             }
 
@@ -120,8 +118,7 @@ class TransactionRepository implements TransactionRepositoryInterface
 
         if ($filters) {
             if (isset($filters['payee'])) {
-                // Use whereRaw with parameter binding to prevent SQL injection
-                $query->where('payee', 'ILIKE', '%'.str_replace(['%', '_'], ['\%', '\_'], $filters['payee']).'%');
+                $query->where('payee', 'ILIKE', '%'.$filters['payee'].'%');
             }
 
             if (isset($filters['amount_min'])) {

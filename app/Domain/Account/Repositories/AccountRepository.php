@@ -90,11 +90,9 @@ class AccountRepository implements AccountRepositoryInterface
         // Apply search filter at query level using ILIKE for PostgreSQL (case-insensitive)
         // Falls back to LIKE for other databases, but project uses PostgreSQL
         if (! empty($filters['search'])) {
-            // Escape SQL wildcard characters to prevent injection
-            $search = str_replace(['%', '_'], ['\%', '\_'], $filters['search']);
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'ILIKE', '%'.$search.'%')
-                    ->orWhere('bank', 'ILIKE', '%'.$search.'%');
+            $query->where(function ($q) use ($filters) {
+                $q->where('name', 'ILIKE', '%'.$filters['search'].'%')
+                    ->orWhere('bank', 'ILIKE', '%'.$filters['search'].'%');
             });
         }
 
