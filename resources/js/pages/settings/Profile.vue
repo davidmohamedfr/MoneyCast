@@ -35,17 +35,25 @@ const page = usePage();
 const user = page.props.auth.user;
 
 // VeeValidate form setup
-const { errors: clientErrors } = useForm({
+useForm({
     validationSchema: toTypedSchema(profileUpdateSchema),
 });
 
-const { value: nameValue, errorMessage: nameError } = useField<string>('name', undefined, {
-    initialValue: user.name,
-});
+const { value: nameValue, errorMessage: nameError } = useField<string>(
+    'name',
+    undefined,
+    {
+        initialValue: user.name,
+    },
+);
 
-const { value: emailValue, errorMessage: emailError } = useField<string>('email', undefined, {
-    initialValue: user.email,
-});
+const { value: emailValue, errorMessage: emailError } = useField<string>(
+    'email',
+    undefined,
+    {
+        initialValue: user.email,
+    },
+);
 </script>
 
 <template>
@@ -76,7 +84,10 @@ const { value: emailValue, errorMessage: emailError } = useField<string>('email'
                             placeholder="Full name"
                             :aria-invalid="!!(nameError || errors.name)"
                         />
-                        <InputError class="mt-2" :message="nameError || errors.name" />
+                        <InputError
+                            class="mt-2"
+                            :message="nameError || errors.name"
+                        />
                     </div>
 
                     <div class="grid gap-2">
@@ -92,7 +103,10 @@ const { value: emailValue, errorMessage: emailError } = useField<string>('email'
                             placeholder="Email address"
                             :aria-invalid="!!(emailError || errors.email)"
                         />
-                        <InputError class="mt-2" :message="emailError || errors.email" />
+                        <InputError
+                            class="mt-2"
+                            :message="emailError || errors.email"
+                        />
                     </div>
 
                     <div v-if="mustVerifyEmail && !user.email_verified_at">

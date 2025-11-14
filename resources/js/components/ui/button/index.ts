@@ -9,6 +9,8 @@ export const buttonVariants = cva(
       variant: {
         default:
           'bg-primary text-primary-foreground shadow-xs hover:bg-primary/90',
+        gradient:
+          'bg-gradient-to-r from-purple-600 via-purple-500 to-blue-600 text-white font-semibold shadow-lg shadow-purple-500/50 hover:from-purple-500 hover:via-purple-400 hover:to-blue-500 hover:shadow-xl hover:shadow-purple-500/60 hover:scale-105 active:scale-95 transition-all duration-200 dark:from-purple-500 dark:via-[hsl(250,95%,65%)] dark:to-blue-500 dark:hover:from-purple-400 dark:hover:via-[hsl(250,95%,70%)] dark:hover:to-blue-400',
         destructive:
           'bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
         outline:

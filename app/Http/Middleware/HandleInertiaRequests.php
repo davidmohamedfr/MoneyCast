@@ -24,6 +24,11 @@ class HandleInertiaRequests extends Middleware
      */
     public function version(Request $request): ?string
     {
+        // Force fresh page loads on every navigation during development
+        if (app()->environment('local')) {
+            return (string) time();
+        }
+
         return parent::version($request);
     }
 
@@ -47,5 +52,22 @@ class HandleInertiaRequests extends Middleware
             ],
             'sidebarOpen' => ! $request->hasCookie('sidebar_state') || $request->cookie('sidebar_state') === 'true',
         ];
+    }
+
+    /**
+     * Handle the incoming request and set JSON encoding options.
+     */
+    public function handle($request, $next)
+    {
+        $response = parent::handle($request, $next);
+
+        // Set JSON encoding options to preserve float types (e.g., 0.0, 1500.0)
+        if ($response instanceof \Illuminate\Http\JsonResponse) {
+            $response->setEncodingOptions(
+                JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES
+            );
+        }
+
+        return $response;
     }
 }

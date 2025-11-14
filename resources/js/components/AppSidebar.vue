@@ -14,14 +14,44 @@ import {
 import { dashboard } from '@/routes';
 import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-vue-next';
+import {
+    BookOpen,
+    Folder,
+    LayoutGrid,
+    Plus,
+    Receipt,
+    Wallet,
+} from 'lucide-vue-next';
 import AppLogo from './AppLogo.vue';
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: dashboard().url,
         icon: LayoutGrid,
+    },
+    {
+        title: 'Accounts',
+        href: '/accounts',
+        icon: Wallet,
+    },
+    {
+        title: 'Transactions',
+        href: '/transactions',
+        icon: Receipt,
+    },
+];
+
+const quickActions: NavItem[] = [
+    {
+        title: 'New Transaction',
+        href: '/transactions/create',
+        icon: Plus,
+    },
+    {
+        title: 'New Account',
+        href: '/accounts/create',
+        icon: Wallet,
     },
 ];
 
@@ -40,12 +70,12 @@ const footerNavItems: NavItem[] = [
 </script>
 
 <template>
-    <Sidebar collapsible="icon" variant="inset">
+    <Sidebar id="sidebar-nav" collapsible="icon" variant="inset">
         <SidebarHeader>
             <SidebarMenu>
                 <SidebarMenuItem>
                     <SidebarMenuButton size="lg" as-child>
-                        <Link :href="dashboard()">
+                        <Link :href="dashboard().url">
                             <AppLogo />
                         </Link>
                     </SidebarMenuButton>
@@ -55,11 +85,22 @@ const footerNavItems: NavItem[] = [
 
         <SidebarContent>
             <NavMain :items="mainNavItems" />
+            <NavMain :items="quickActions" title="Quick Actions" />
         </SidebarContent>
 
         <SidebarFooter>
             <NavFooter :items="footerNavItems" />
             <NavUser />
+            <div
+                class="mt-2 hidden px-4 text-center text-xs text-muted-foreground group-data-[collapsible=icon]:hidden md:block"
+            >
+                Press
+                <kbd
+                    class="mx-1 inline-flex h-4 min-w-4 items-center justify-center rounded border border-border bg-muted px-1 text-[10px] font-semibold"
+                    >?</kbd
+                >
+                for shortcuts
+            </div>
         </SidebarFooter>
     </Sidebar>
     <slot />

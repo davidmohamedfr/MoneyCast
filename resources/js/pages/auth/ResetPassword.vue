@@ -56,7 +56,10 @@ const inputEmail = ref(props.email);
                         autofocus
                         placeholder="Password"
                     />
-                    <InputError :message="errors.password" />
+                    <InputError
+                        :message="errors.password"
+                        help-text="Choose a strong password with at least 8 characters"
+                    />
                 </div>
 
                 <div class="grid gap-2">
@@ -71,7 +74,10 @@ const inputEmail = ref(props.email);
                         class="mt-1 block w-full"
                         placeholder="Confirm password"
                     />
-                    <InputError :message="errors.password_confirmation" />
+                    <InputError
+                        :message="errors.password_confirmation"
+                        help-text="Must match the password you entered above"
+                    />
                 </div>
 
                 <Button

@@ -13,7 +13,7 @@
 
 pest()->extend(Tests\TestCase::class)
     ->use(Illuminate\Foundation\Testing\RefreshDatabase::class)
-    ->in('Feature');
+    ->in('Feature', 'Unit');
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +41,33 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+/**
+ * Seed categories for tests
+ */
+function seedCategories(): void
 {
-    // ..
+    $categories = [
+        // Income categories
+        ['name' => 'Salary', 'type' => 'income', 'icon' => 'briefcase'],
+        ['name' => 'Freelance/Business', 'type' => 'income', 'icon' => 'laptop'],
+        ['name' => 'Investments', 'type' => 'income', 'icon' => 'trending-up'],
+        ['name' => 'Gifts', 'type' => 'income', 'icon' => 'gift'],
+        ['name' => 'Other Income', 'type' => 'income', 'icon' => 'plus-circle'],
+
+        // Expense categories
+        ['name' => 'Groceries', 'type' => 'expense', 'icon' => 'shopping-cart'],
+        ['name' => 'Rent/Mortgage', 'type' => 'expense', 'icon' => 'home'],
+        ['name' => 'Utilities', 'type' => 'expense', 'icon' => 'zap'],
+        ['name' => 'Transportation', 'type' => 'expense', 'icon' => 'car'],
+        ['name' => 'Healthcare', 'type' => 'expense', 'icon' => 'heart'],
+        ['name' => 'Entertainment', 'type' => 'expense', 'icon' => 'film'],
+        ['name' => 'Shopping', 'type' => 'expense', 'icon' => 'shopping-bag'],
+        ['name' => 'Dining Out', 'type' => 'expense', 'icon' => 'utensils'],
+        ['name' => 'Insurance', 'type' => 'expense', 'icon' => 'shield'],
+        ['name' => 'Other Expense', 'type' => 'expense', 'icon' => 'minus-circle'],
+    ];
+
+    foreach ($categories as $category) {
+        \App\Domain\Category\Models\Category::create($category);
+    }
 }
