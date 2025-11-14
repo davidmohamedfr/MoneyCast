@@ -5,7 +5,6 @@ use App\Domain\Account\Data\AccountData;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
-use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseMissing;
 
 beforeEach(function () {
