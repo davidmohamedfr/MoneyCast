@@ -11,6 +11,8 @@ class DashboardService
 {
     private const TOP_CATEGORIES_LIMIT = 8;
 
+    private const RECENT_TRANSACTIONS_LIMIT = 10;
+
     public function __construct(
         private AccountRepositoryInterface $accountRepository,
         private AccountService $accountService,
@@ -20,7 +22,7 @@ class DashboardService
     public function getDashboardData(int $userId): array
     {
         $accounts = $this->accountService->getAccountsWithBalances($userId);
-        $recentTransactions = $this->getRecentTransactions($userId, 10);
+        $recentTransactions = $this->getRecentTransactions($userId, self::RECENT_TRANSACTIONS_LIMIT);
         $monthlyStats = $this->getMonthlyStats($userId);
         $categorySpending = $this->getCategorySpending($userId);
         $totalBalance = $this->calculateTotalBalance($accounts);
