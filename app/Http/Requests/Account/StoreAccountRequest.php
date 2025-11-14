@@ -29,8 +29,8 @@ class StoreAccountRequest extends FormRequest
             'initial_balance' => [
                 'required',
                 'numeric',
-                'between:-999999999.99,999999999.99',
-                'regex:/^-?\d{1,9}(\.\d{1,2})?$/',
+                'between:-999999999999999.9999,999999999999999.9999',
+                'regex:/^-?\d{1,15}(\.\d{1,4})?$/',
             ],
             'currency' => ['required', 'string', 'size:3'],
         ];
