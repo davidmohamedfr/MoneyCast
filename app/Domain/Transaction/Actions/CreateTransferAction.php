@@ -2,6 +2,7 @@
 
 namespace App\Domain\Transaction\Actions;
 
+use App\Domain\Account\Repositories\AccountRepositoryInterface;
 use App\Domain\Transaction\Data\TransactionData;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transaction\Repositories\TransactionRepositoryInterface;
@@ -10,7 +11,8 @@ use Illuminate\Support\Facades\DB;
 class CreateTransferAction
 {
     public function __construct(
-        private TransactionRepositoryInterface $repository
+        private TransactionRepositoryInterface $repository,
+        private AccountRepositoryInterface $accountRepository
     ) {}
 
     public function execute(
@@ -22,7 +24,24 @@ class CreateTransferAction
         ?string $description = null,
         ?string $notes = null
     ): array {
+        // Validate that fromAccountId !== toAccountId (prevent self-transfers)
+        if ($fromAccountId === $toAccountId) {
+            throw new \InvalidArgumentException('Cannot transfer to the same account');
+        }
+
         return DB::transaction(function () use ($fromAccountId, $toAccountId, $amount, $date, $userId, $description, $notes) {
+            // Validate that both accounts exist and belong to the same user
+            $fromAccount = $this->accountRepository->findById($fromAccountId);
+            $toAccount = $this->accountRepository->findById($toAccountId);
+
+            if (! $fromAccount || $fromAccount->user_id !== $userId) {
+                throw new \InvalidArgumentException('Invalid source account');
+            }
+
+            if (! $toAccount || $toAccount->user_id !== $userId) {
+                throw new \InvalidArgumentException('Invalid destination account');
+            }
+
             // Create the outgoing transaction (from source account)
             $outgoingData = new TransactionData(
                 account_id: $fromAccountId,
@@ -55,9 +74,21 @@ class CreateTransferAction
 
             $incomingTransaction = $this->repository->create($incomingData);
 
-            // Update the outgoing transaction with the related transaction ID
-            $outgoingTransaction->related_transaction_id = $incomingTransaction->id;
-            $outgoingTransaction->save();
+            // Update the outgoing transaction with the related transaction ID using repository
+            $outgoingUpdateData = new TransactionData(
+                account_id: $fromAccountId,
+                type: 'transfer',
+                amount: $amount,
+                payee: 'Transfer',
+                date: $date,
+                category_id: null,
+                description: $description,
+                notes: $notes,
+                related_transaction_id: $incomingTransaction->id,
+                user_id: $userId
+            );
+
+            $outgoingTransaction = $this->repository->update($outgoingTransaction, $outgoingUpdateData);
 
             return [
                 'outgoing' => $outgoingTransaction,
