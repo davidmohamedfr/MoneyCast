@@ -26,7 +26,12 @@ class StoreAccountRequest extends FormRequest
             ],
             'type' => ['required', Rule::enum(AccountType::class)],
             'bank' => ['required', 'string', 'max:255'],
-            'initial_balance' => ['required', 'numeric'],
+            'initial_balance' => [
+                'required',
+                'numeric',
+                'between:-999999999.99,999999999.99',
+                'regex:/^-?\d{1,9}(\.\d{1,2})?$/',
+            ],
             'currency' => ['required', 'string', 'size:3'],
         ];
     }
