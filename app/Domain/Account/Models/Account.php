@@ -36,21 +36,6 @@ class Account extends Model
         'bank',
     ];
 
-    /**
-     * The attributes that aren't mass assignable.
-     *
-     * This provides an extra layer of security by explicitly preventing
-     * mass assignment of sensitive fields like id, created_at, etc.
-     *
-     * @var array
-     */
-    protected $guarded = [
-        'id',
-        'created_at',
-        'updated_at',
-        'archived_at',
-    ];
-
     protected $casts = [
         'initial_balance' => 'decimal:4',
         'type' => AccountType::class,
