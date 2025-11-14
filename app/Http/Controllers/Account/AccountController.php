@@ -13,6 +13,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Account\StoreAccountRequest;
 use App\Http\Requests\Account\UpdateAccountRequest;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Log;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -95,10 +96,22 @@ class AccountController extends Controller
             return redirect()->route('accounts.index')
                 ->with('success', 'Account created successfully');
         } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Failed to create account', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Failed to create account. Please try again.');
         } catch (\Exception $e) {
+            Log::error('Unexpected error creating account', [
+                'user_id' => auth()->id(),
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'An unexpected error occurred. Please try again.');
@@ -135,12 +148,31 @@ class AccountController extends Controller
             return redirect()->route('accounts.index')
                 ->with('success', 'Account deleted successfully');
         } catch (\App\Domain\Account\Exceptions\AccountHasTransactionsException $e) {
+            Log::warning('Attempted to delete account with transactions', [
+                'user_id' => auth()->id(),
+                'account_id' => $account->id,
+            ]);
+
             return redirect()->route('accounts.index')
                 ->with('error', 'Cannot delete account with existing transactions. Please delete all transactions first.');
         } catch (\Illuminate\Database\QueryException $e) {
+            Log::error('Failed to delete account', [
+                'user_id' => auth()->id(),
+                'account_id' => $account->id,
+                'error' => $e->getMessage(),
+                'code' => $e->getCode(),
+            ]);
+
             return redirect()->route('accounts.index')
                 ->with('error', 'Failed to delete account. Please try again.');
         } catch (\Exception $e) {
+            Log::error('Unexpected error deleting account', [
+                'user_id' => auth()->id(),
+                'account_id' => $account->id,
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ]);
+
             return redirect()->route('accounts.index')
                 ->with('error', 'An unexpected error occurred while deleting the account.');
         }
