@@ -19,6 +19,10 @@ class Account extends Model
     /**
      * The name of the "deleted at" column.
      *
+     * IMPORTANT: This model uses 'archived_at' instead of Laravel's standard 'deleted_at'
+     * to better represent the business logic of archiving accounts rather than deleting them.
+     * Archived accounts remain in the database but are hidden from normal queries.
+     *
      * @var string
      */
     const DELETED_AT = 'archived_at';
@@ -30,6 +34,21 @@ class Account extends Model
         'initial_balance',
         'currency',
         'bank',
+    ];
+
+    /**
+     * The attributes that aren't mass assignable.
+     *
+     * This provides an extra layer of security by explicitly preventing
+     * mass assignment of sensitive fields like id, created_at, etc.
+     *
+     * @var array
+     */
+    protected $guarded = [
+        'id',
+        'created_at',
+        'updated_at',
+        'archived_at',
     ];
 
     protected $casts = [
