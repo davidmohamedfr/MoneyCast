@@ -24,6 +24,17 @@ class CreateTransferAction
         ?string $description = null,
         ?string $notes = null
     ): array {
+        // Validate amount
+        if ($amount <= 0) {
+            throw new \InvalidArgumentException('Transfer amount must be greater than zero');
+        }
+
+        // Validate date format (Y-m-d)
+        $dateObj = \DateTime::createFromFormat('Y-m-d', $date);
+        if (! $dateObj || $dateObj->format('Y-m-d') !== $date) {
+            throw new \InvalidArgumentException('Invalid date format. Expected Y-m-d');
+        }
+
         // Validate that fromAccountId !== toAccountId (prevent self-transfers)
         if ($fromAccountId === $toAccountId) {
             throw new \InvalidArgumentException('Cannot transfer to the same account');
