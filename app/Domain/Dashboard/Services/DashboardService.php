@@ -96,47 +96,29 @@ class DashboardService
         $startDate = now()->startOfMonth()->format('Y-m-d');
         $endDate = now()->endOfMonth()->format('Y-m-d');
 
-        $transactions = $this->transactionRepository->getAllForUser($userId, [
-            'start_date' => $startDate,
-            'end_date' => $endDate,
-            'type' => TransactionType::Expense->value,
-            'exclude_opening_balance' => true,
-        ]);
+        // Use database-level aggregation for performance
+        $categorySpending = \App\Domain\Transaction\Models\Transaction::query()
+            ->join('categories', 'transactions.category_id', '=', 'categories.id')
+            ->where('transactions.user_id', $userId)
+            ->where('transactions.type', TransactionType::Expense->value)
+            ->where('transactions.is_opening_balance', false)
+            ->whereDate('transactions.date', '>=', $startDate)
+            ->whereDate('transactions.date', '<=', $endDate)
+            ->whereNotNull('transactions.category_id')
+            ->selectRaw('categories.name as category, SUM(transactions.amount) as amount, COUNT(*) as transaction_count')
+            ->groupBy('categories.name')
+            ->orderByDesc('amount')
+            ->limit(self::TOP_CATEGORIES_LIMIT)
+            ->get();
 
-        $categorySpending = [];
-
-        foreach ($transactions as $transaction) {
-            if (! $transaction->category) {
-                continue;
-            }
-
-            $categoryName = $transaction->category->name;
-
-            if (! isset($categorySpending[$categoryName])) {
-                $categorySpending[$categoryName] = [
-                    'amount' => 0.0,
-                    'count' => 0,
-                ];
-            }
-
-            $categorySpending[$categoryName]['amount'] += (float) $transaction->amount;
-            $categorySpending[$categoryName]['count']++;
-        }
-
-        // Sort by amount descending and format for chart
-        uasort($categorySpending, fn ($a, $b) => $b['amount'] <=> $a['amount']);
-
-        $formattedData = [];
-        foreach ($categorySpending as $category => $data) {
-            $formattedData[] = [
-                'category' => $category,
-                'amount' => (float) round($data['amount'], 2),
-                'transaction_count' => $data['count'],
+        // Format for chart
+        return $categorySpending->map(function ($item) {
+            return [
+                'category' => $item->category,
+                'amount' => (float) round($item->amount, 2),
+                'transaction_count' => $item->transaction_count,
                 'color' => '',  // Will be assigned in frontend
             ];
-        }
-
-        // Limit to top categories
-        return array_slice($formattedData, 0, self::TOP_CATEGORIES_LIMIT);
+        })->toArray();
     }
 }
