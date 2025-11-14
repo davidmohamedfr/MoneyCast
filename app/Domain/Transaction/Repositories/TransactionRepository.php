@@ -118,7 +118,8 @@ class TransactionRepository implements TransactionRepositoryInterface
 
         if ($filters) {
             if (isset($filters['payee'])) {
-                $query->where('payee', 'ILIKE', '%'.$filters['payee'].'%');
+                // Use whereRaw with parameter binding to prevent SQL injection
+                $query->where('payee', 'ILIKE', '%'.str_replace(['%', '_'], ['\%', '\_'], $filters['payee']).'%');
             }
 
             if (isset($filters['amount_min'])) {
