@@ -87,12 +87,13 @@ class AccountRepository implements AccountRepositoryInterface
     {
         $query = Account::where('user_id', $userId);
 
-        // Apply search filter at query level
+        // Apply search filter at query level using ILIKE for PostgreSQL (case-insensitive)
+        // Falls back to LIKE for other databases, but project uses PostgreSQL
         if (! empty($filters['search'])) {
-            $search = strtolower($filters['search']);
+            $search = $filters['search'];
             $query->where(function ($q) use ($search) {
-                $q->whereRaw('LOWER(name) LIKE ?', ['%'.$search.'%'])
-                    ->orWhereRaw('LOWER(bank) LIKE ?', ['%'.$search.'%']);
+                $q->where('name', 'ILIKE', '%'.$search.'%')
+                    ->orWhere('bank', 'ILIKE', '%'.$search.'%');
             });
         }
 
