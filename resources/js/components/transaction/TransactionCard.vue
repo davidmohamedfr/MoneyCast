@@ -166,8 +166,12 @@ const confirmDelete = () => {
                             </Badge>
                         </div>
 
-                        <div class="flex items-center justify-between border-t pt-3">
-                            <span class="text-sm text-muted-foreground">Amount:</span>
+                        <div
+                            class="flex items-center justify-between border-t pt-3"
+                        >
+                            <span class="text-sm text-muted-foreground"
+                                >Amount:</span
+                            >
                             <span
                                 :class="amountColorClass"
                                 class="text-lg font-semibold"
@@ -181,7 +185,9 @@ const confirmDelete = () => {
                             v-if="transaction.account"
                             class="flex items-center justify-between"
                         >
-                            <span class="text-sm text-muted-foreground">Account:</span>
+                            <span class="text-sm text-muted-foreground"
+                                >Account:</span
+                            >
                             <span class="text-sm font-medium">{{
                                 transaction.account.name
                             }}</span>
@@ -191,7 +197,9 @@ const confirmDelete = () => {
                             v-if="transaction.category"
                             class="flex items-center justify-between"
                         >
-                            <span class="text-sm text-muted-foreground">Category:</span>
+                            <span class="text-sm text-muted-foreground"
+                                >Category:</span
+                            >
                             <Badge variant="outline">{{
                                 transaction.category.name
                             }}</Badge>

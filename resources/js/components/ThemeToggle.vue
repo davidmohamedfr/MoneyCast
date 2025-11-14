@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Moon, Sun, Monitor } from 'lucide-vue-next';
 import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
@@ -8,6 +7,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAppearance } from '@/composables/useAppearance';
+import { Monitor, Moon, Sun } from 'lucide-vue-next';
 
 const { appearance, updateAppearance } = useAppearance();
 
@@ -27,10 +27,10 @@ const themes = [
                 class="relative h-9 w-9 rounded-lg transition-colors hover:bg-accent hover:text-accent-foreground"
             >
                 <Sun
-                    class="h-5 w-5 rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
+                    class="h-5 w-5 scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90"
                 />
                 <Moon
-                    class="absolute h-5 w-5 rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
+                    class="absolute h-5 w-5 scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0"
                 />
                 <span class="sr-only">Toggle theme</span>
             </Button>

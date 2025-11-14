@@ -51,7 +51,10 @@ const breadcrumbs: BreadcrumbItem[] = [
             <!-- PRIMARY: Total Balance, This Month & Spending Breakdown -->
             <div class="grid gap-6 lg:grid-cols-3">
                 <div class="lg:col-span-1">
-                    <BalanceCard :total-balance="total_balance" :account-count="accounts.length" />
+                    <BalanceCard
+                        :total-balance="total_balance"
+                        :account-count="accounts.length"
+                    />
                 </div>
                 <div class="lg:col-span-1">
                     <MonthlyStats :stats="monthly_stats" />

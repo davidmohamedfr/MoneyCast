@@ -128,8 +128,12 @@ const rightNavItems: NavItem[] = [
                                     </Link>
                                 </nav>
                                 <div class="flex flex-col space-y-4">
-                                    <div class="flex items-center justify-between px-3">
-                                        <span class="text-sm font-medium">Theme</span>
+                                    <div
+                                        class="flex items-center justify-between px-3"
+                                    >
+                                        <span class="text-sm font-medium"
+                                            >Theme</span
+                                        >
                                         <ThemeToggle />
                                     </div>
                                     <a

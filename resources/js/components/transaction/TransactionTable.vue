@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import Icon from '@/components/Icon.vue';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -14,7 +15,6 @@ import { useFormatCurrency } from '@/composables/useFormatCurrency';
 import { useInitials } from '@/composables/useInitials';
 import type { Transaction } from '@/types/transaction';
 import { router } from '@inertiajs/vue3';
-import Icon from '@/components/Icon.vue';
 import { computed, ref } from 'vue';
 
 const props = defineProps<{
@@ -123,7 +123,9 @@ const getPayeeAvatarColor = (payee: string) => {
         'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400',
     ];
 
-    const hash = payee.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
+    const hash = payee
+        .split('')
+        .reduce((acc, char) => acc + char.charCodeAt(0), 0);
     return colors[hash % colors.length];
 };
 
@@ -158,7 +160,7 @@ const confirmDelete = () => {
                     <tr>
                         <th class="px-4 py-3 text-left text-sm font-semibold">
                             <button
-                                class="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary focus-standard"
+                                class="focus-standard flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary"
                                 @click="toggleSort('payee')"
                             >
                                 Payee
@@ -175,7 +177,7 @@ const confirmDelete = () => {
                         </th>
                         <th class="px-4 py-3 text-left text-sm font-semibold">
                             <button
-                                class="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary focus-standard"
+                                class="focus-standard flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary"
                                 @click="toggleSort('category')"
                             >
                                 Category
@@ -192,7 +194,7 @@ const confirmDelete = () => {
                         </th>
                         <th class="px-4 py-3 text-left text-sm font-semibold">
                             <button
-                                class="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary focus-standard"
+                                class="focus-standard flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary"
                                 @click="toggleSort('date')"
                             >
                                 Date
@@ -209,7 +211,7 @@ const confirmDelete = () => {
                         </th>
                         <th class="px-4 py-3 text-left text-sm font-semibold">
                             <button
-                                class="flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary focus-standard"
+                                class="focus-standard flex items-center gap-2 font-semibold text-foreground transition-colors hover:text-primary"
                                 @click="toggleSort('type')"
                             >
                                 Type
@@ -226,7 +228,7 @@ const confirmDelete = () => {
                         </th>
                         <th class="px-4 py-3 text-right text-sm font-semibold">
                             <button
-                                class="flex items-center justify-end gap-2 font-semibold text-foreground transition-colors hover:text-primary focus-standard ml-auto"
+                                class="focus-standard ml-auto flex items-center justify-end gap-2 font-semibold text-foreground transition-colors hover:text-primary"
                                 @click="toggleSort('amount')"
                             >
                                 Amount
@@ -250,29 +252,39 @@ const confirmDelete = () => {
                     <tr
                         v-for="transaction in sortedTransactions"
                         :key="transaction.id"
-                        class="cursor-pointer transition-colors hover:bg-accent/50 group"
+                        class="group cursor-pointer transition-colors hover:bg-accent/50"
                         @click="handleRowClick(transaction)"
                     >
                         <td class="px-4 py-3">
                             <div class="flex items-center gap-3">
                                 <Avatar
-                                    :class="getPayeeAvatarColor(transaction.payee)"
+                                    :class="
+                                        getPayeeAvatarColor(transaction.payee)
+                                    "
                                     class="h-10 w-10 shrink-0"
                                 >
                                     <AvatarFallback
-                                        :class="getPayeeAvatarColor(transaction.payee)"
+                                        :class="
+                                            getPayeeAvatarColor(
+                                                transaction.payee,
+                                            )
+                                        "
                                         class="font-semibold"
                                     >
-                                        {{ getPayeeInitials(transaction.payee) }}
+                                        {{
+                                            getPayeeInitials(transaction.payee)
+                                        }}
                                     </AvatarFallback>
                                 </Avatar>
                                 <div class="min-w-0">
-                                    <p class="font-medium text-foreground truncate">
+                                    <p
+                                        class="truncate font-medium text-foreground"
+                                    >
                                         {{ transaction.payee }}
                                     </p>
                                     <p
                                         v-if="transaction.account"
-                                        class="text-sm text-muted-foreground truncate"
+                                        class="truncate text-sm text-muted-foreground"
                                     >
                                         {{ transaction.account.name }}
                                     </p>
@@ -287,13 +299,18 @@ const confirmDelete = () => {
                             >
                                 {{ transaction.category.name }}
                             </Badge>
-                            <span v-else class="text-sm text-muted-foreground">—</span>
+                            <span v-else class="text-sm text-muted-foreground"
+                                >—</span
+                            >
                         </td>
                         <td class="px-4 py-3 text-sm text-muted-foreground">
                             {{ formatDate(transaction.date) }}
                         </td>
                         <td class="px-4 py-3">
-                            <Badge :class="getTypeColor(transaction.type)" class="capitalize">
+                            <Badge
+                                :class="getTypeColor(transaction.type)"
+                                class="capitalize"
+                            >
                                 {{ transaction.type }}
                             </Badge>
                         </td>
@@ -302,10 +319,17 @@ const confirmDelete = () => {
                             :class="getTransactionColorClass(transaction.type)"
                         >
                             {{ transaction.type === 'expense' ? '-' : '+'
-                            }}{{ formatCurrency(parseFloat(transaction.amount), transaction.account?.currency || 'EUR') }}
+                            }}{{
+                                formatCurrency(
+                                    parseFloat(transaction.amount),
+                                    transaction.account?.currency || 'EUR',
+                                )
+                            }}
                         </td>
                         <td class="px-4 py-3 text-right">
-                            <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div
+                                class="flex items-center justify-end gap-2 opacity-0 transition-opacity group-hover:opacity-100"
+                            >
                                 <Button
                                     variant="outline"
                                     size="sm"
@@ -316,7 +340,9 @@ const confirmDelete = () => {
                                 <Button
                                     variant="destructive"
                                     size="sm"
-                                    @click.stop="openDeleteDialog(transaction, $event)"
+                                    @click.stop="
+                                        openDeleteDialog(transaction, $event)
+                                    "
                                 >
                                     Delete
                                 </Button>
@@ -333,8 +359,8 @@ const confirmDelete = () => {
                 <DialogHeader>
                     <DialogTitle>Delete Transaction?</DialogTitle>
                     <DialogDescription>
-                        Are you sure you want to delete this transaction? This action
-                        cannot be undone.
+                        Are you sure you want to delete this transaction? This
+                        action cannot be undone.
                     </DialogDescription>
                 </DialogHeader>
 
@@ -345,14 +371,26 @@ const confirmDelete = () => {
                     <div class="flex items-start justify-between">
                         <div class="flex items-center gap-3">
                             <Avatar
-                                :class="getPayeeAvatarColor(transactionToDelete.payee)"
+                                :class="
+                                    getPayeeAvatarColor(
+                                        transactionToDelete.payee,
+                                    )
+                                "
                                 class="h-10 w-10 shrink-0"
                             >
                                 <AvatarFallback
-                                    :class="getPayeeAvatarColor(transactionToDelete.payee)"
+                                    :class="
+                                        getPayeeAvatarColor(
+                                            transactionToDelete.payee,
+                                        )
+                                    "
                                     class="font-semibold"
                                 >
-                                    {{ getPayeeInitials(transactionToDelete.payee) }}
+                                    {{
+                                        getPayeeInitials(
+                                            transactionToDelete.payee,
+                                        )
+                                    }}
                                 </AvatarFallback>
                             </Avatar>
                             <div>
@@ -369,14 +407,31 @@ const confirmDelete = () => {
                         </Badge>
                     </div>
 
-                    <div class="flex items-center justify-between border-t pt-3">
-                        <span class="text-sm text-muted-foreground">Amount:</span>
+                    <div
+                        class="flex items-center justify-between border-t pt-3"
+                    >
+                        <span class="text-sm text-muted-foreground"
+                            >Amount:</span
+                        >
                         <span
-                            :class="getTransactionColorClass(transactionToDelete.type)"
+                            :class="
+                                getTransactionColorClass(
+                                    transactionToDelete.type,
+                                )
+                            "
                             class="text-lg font-semibold"
                         >
-                            {{ transactionToDelete.type === 'expense' ? '-' : '+'
-                            }}{{ formatCurrency(parseFloat(transactionToDelete.amount), transactionToDelete.account?.currency || 'EUR') }}
+                            {{
+                                transactionToDelete.type === 'expense'
+                                    ? '-'
+                                    : '+'
+                            }}{{
+                                formatCurrency(
+                                    parseFloat(transactionToDelete.amount),
+                                    transactionToDelete.account?.currency ||
+                                        'EUR',
+                                )
+                            }}
                         </span>
                     </div>
 
@@ -384,7 +439,9 @@ const confirmDelete = () => {
                         v-if="transactionToDelete.category"
                         class="flex items-center justify-between"
                     >
-                        <span class="text-sm text-muted-foreground">Category:</span>
+                        <span class="text-sm text-muted-foreground"
+                            >Category:</span
+                        >
                         <Badge variant="outline">{{
                             transactionToDelete.category.name
                         }}</Badge>

@@ -98,7 +98,7 @@ onBeforeUnmount(() => {
                 <div class="relative">
                     <Icon
                         name="search"
-                        class="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
+                        class="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-muted-foreground"
                         aria-hidden="true"
                     />
                     <Input
@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
                     <Icon
                         v-if="isSearching"
                         name="loader-circle"
-                        class="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
+                        class="absolute top-1/2 right-3 h-4 w-4 -translate-y-1/2 animate-spin text-muted-foreground"
                         aria-hidden="true"
                         aria-label="Searching"
                     />
@@ -121,8 +121,14 @@ onBeforeUnmount(() => {
             <!-- Filter by type -->
             <div class="space-y-2">
                 <Label for="type" class="sr-only">Account type</Label>
-                <Select v-model="localFilters.type" @update:model-value="applyFilters">
-                    <SelectTrigger id="type" aria-label="Filter by account type">
+                <Select
+                    v-model="localFilters.type"
+                    @update:model-value="applyFilters"
+                >
+                    <SelectTrigger
+                        id="type"
+                        aria-label="Filter by account type"
+                    >
                         <SelectValue placeholder="All types" />
                     </SelectTrigger>
                     <SelectContent>

@@ -86,7 +86,7 @@ const onSubmit = handleSubmit((values) => {
                 :disabled="isSubmitting"
                 required
                 aria-required="true"
-                class="border-input focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none"
+                class="flex h-9 w-full items-center rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50"
             >
                 <option value="">Select account type</option>
                 <option value="checking">Checking</option>

@@ -69,7 +69,9 @@ const viewAllAccounts = () => {
             <div class="flex items-center justify-between">
                 <div>
                     <CardTitle>Your Accounts</CardTitle>
-                    <CardDescription>Overview of all your accounts</CardDescription>
+                    <CardDescription
+                        >Overview of all your accounts</CardDescription
+                    >
                 </div>
                 <Button
                     v-if="accounts.length > 0"
@@ -120,7 +122,9 @@ const viewAllAccounts = () => {
                                       ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
                                       : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
                             ]"
-                            :aria-label="getAccountTypeLabel(accountData.account.type)"
+                            :aria-label="
+                                getAccountTypeLabel(accountData.account.type)
+                            "
                         >
                             <Icon
                                 :name="getAccountIcon(accountData.account.type)"
@@ -133,8 +137,15 @@ const viewAllAccounts = () => {
                                 <p class="truncate font-medium text-foreground">
                                     {{ accountData.account.name }}
                                 </p>
-                                <Badge variant="outline" class="shrink-0 text-xs">
-                                    {{ getAccountTypeLabel(accountData.account.type) }}
+                                <Badge
+                                    variant="outline"
+                                    class="shrink-0 text-xs"
+                                >
+                                    {{
+                                        getAccountTypeLabel(
+                                            accountData.account.type,
+                                        )
+                                    }}
                                 </Badge>
                             </div>
                             <p class="text-sm text-muted-foreground">
@@ -145,7 +156,11 @@ const viewAllAccounts = () => {
 
                     <div class="flex shrink-0 flex-col items-end gap-1">
                         <div
-                            :class="getBalanceColorClass(accountData.current_balance)"
+                            :class="
+                                getBalanceColorClass(
+                                    accountData.current_balance,
+                                )
+                            "
                             class="text-lg font-semibold tabular-nums"
                         >
                             {{

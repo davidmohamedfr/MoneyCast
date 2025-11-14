@@ -18,9 +18,10 @@ const props = defineProps<{
 }>();
 
 // Undo functionality - stores pending deletion
-const pendingDeletion = ref<{ id: number; timeout: ReturnType<typeof setTimeout> } | null>(
-    null,
-);
+const pendingDeletion = ref<{
+    id: number;
+    timeout: ReturnType<typeof setTimeout>;
+} | null>(null);
 
 const handleDelete = (id: number) => {
     // Find transaction details for toast message

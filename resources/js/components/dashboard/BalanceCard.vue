@@ -86,7 +86,9 @@ const balanceStatus = computed(() => {
                             class="h-4 w-4 text-muted-foreground"
                             aria-hidden="true"
                         />
-                        <p class="text-sm font-medium text-muted-foreground">Active Accounts</p>
+                        <p class="text-sm font-medium text-muted-foreground">
+                            Active Accounts
+                        </p>
                     </div>
                     <p class="text-2xl font-semibold">
                         {{ accountCount }}

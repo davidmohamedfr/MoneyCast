@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import EmptyState from '@/components/EmptyState.vue';
 import Heading from '@/components/Heading.vue';
-import TransactionTable from '@/components/transaction/TransactionTable.vue';
 import TransactionFiltersIndex from '@/components/transaction/TransactionFiltersIndex.vue';
+import TransactionTable from '@/components/transaction/TransactionTable.vue';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/AppLayout.vue';
 import { dashboard } from '@/routes';
@@ -26,13 +26,13 @@ interface PageProps {
     categories?: Array<{ id: number; name: string }>;
 }
 
- 
 const props = defineProps<PageProps>();
 
 // Undo functionality - stores pending deletion
-const pendingDeletion = ref<{ id: number; timeout: ReturnType<typeof setTimeout> } | null>(
-    null,
-);
+const pendingDeletion = ref<{
+    id: number;
+    timeout: ReturnType<typeof setTimeout>;
+} | null>(null);
 
 const handleDelete = (id: number) => {
     // Find transaction details for toast message
@@ -93,7 +93,9 @@ const breadcrumbs: BreadcrumbItemType[] = [
         <div class="flex h-full flex-1 flex-col gap-6 overflow-x-auto p-4">
             <div class="flex items-center justify-between">
                 <Heading>Transactions</Heading>
-                <Button variant="gradient" @click="handleCreate">Create Transaction</Button>
+                <Button variant="gradient" @click="handleCreate"
+                    >Create Transaction</Button
+                >
             </div>
 
             <div v-if="transactions.length > 0 || filters" class="space-y-6">

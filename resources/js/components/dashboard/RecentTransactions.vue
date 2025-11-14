@@ -87,7 +87,11 @@ const viewAllTransactions = () => {
                         >Your latest financial activity</CardDescription
                     >
                 </div>
-                <Button variant="gradient" size="sm" @click="viewAllTransactions">
+                <Button
+                    variant="gradient"
+                    size="sm"
+                    @click="viewAllTransactions"
+                >
                     View All
                 </Button>
             </div>
@@ -119,7 +123,9 @@ const viewAllTransactions = () => {
                     v-for="transaction in transactions"
                     :key="transaction.id"
                     class="flex cursor-pointer items-center justify-between rounded-lg p-3 transition-colors hover:bg-accent"
-                    @click="router.visit(`/transactions/${transaction.id}/edit`)"
+                    @click="
+                        router.visit(`/transactions/${transaction.id}/edit`)
+                    "
                 >
                     <div class="flex min-w-0 flex-1 items-center gap-3">
                         <div

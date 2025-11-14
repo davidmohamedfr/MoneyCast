@@ -105,7 +105,11 @@ const clearFilters = () => {
                 <DatePicker
                     id="end_date"
                     v-model="localFilters.end_date"
-                    :min-date="localFilters.start_date ? new Date(localFilters.start_date) : null"
+                    :min-date="
+                        localFilters.start_date
+                            ? new Date(localFilters.start_date)
+                            : null
+                    "
                     placeholder="Select end date"
                 />
             </div>

@@ -100,9 +100,15 @@ const currentMonth = computed(() => {
                                 class="h-4 w-4 text-green-600 dark:text-green-400"
                                 aria-label="Income"
                             />
-                            <p class="text-xs font-medium text-muted-foreground">Income</p>
+                            <p
+                                class="text-xs font-medium text-muted-foreground"
+                            >
+                                Income
+                            </p>
                         </div>
-                        <p class="text-lg font-semibold text-green-600 dark:text-green-400">
+                        <p
+                            class="text-lg font-semibold text-green-600 dark:text-green-400"
+                        >
                             {{ formattedIncome }}
                         </p>
                     </div>
@@ -114,9 +120,15 @@ const currentMonth = computed(() => {
                                 class="h-4 w-4 text-red-600 dark:text-red-400"
                                 aria-label="Expenses"
                             />
-                            <p class="text-xs font-medium text-muted-foreground">Expenses</p>
+                            <p
+                                class="text-xs font-medium text-muted-foreground"
+                            >
+                                Expenses
+                            </p>
                         </div>
-                        <p class="text-lg font-semibold text-red-600 dark:text-red-400">
+                        <p
+                            class="text-lg font-semibold text-red-600 dark:text-red-400"
+                        >
                             {{ formattedExpenses }}
                         </p>
                     </div>

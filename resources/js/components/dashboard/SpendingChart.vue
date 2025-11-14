@@ -103,10 +103,15 @@ const formatCurrency = (amount: number) => {
     <Card class="flex h-[340px] flex-col">
         <CardHeader class="flex-shrink-0">
             <CardTitle>Top Spending Breakdown</CardTitle>
-            <CardDescription>Your expenses by category this month</CardDescription>
+            <CardDescription
+                >Your expenses by category this month</CardDescription
+            >
         </CardHeader>
         <CardContent class="flex flex-1 flex-col overflow-hidden">
-            <div v-if="categoryData.length > 0" class="flex flex-1 flex-col space-y-4">
+            <div
+                v-if="categoryData.length > 0"
+                class="flex flex-1 flex-col space-y-4"
+            >
                 <!-- Category List with Progress Bars (scrollable if needed) -->
                 <div class="flex-1 space-y-4 overflow-y-auto pr-1">
                     <div
@@ -121,17 +126,31 @@ const formatCurrency = (amount: number) => {
                             </span>
                             <div class="flex items-baseline gap-3">
                                 <!-- Amount (primary) -->
-                                <span class="text-sm font-semibold text-foreground">
-                                    {{ formatCurrency(Math.abs(category.amount)) }}
+                                <span
+                                    class="text-sm font-semibold text-foreground"
+                                >
+                                    {{
+                                        formatCurrency(
+                                            Math.abs(category.amount),
+                                        )
+                                    }}
                                 </span>
                                 <!-- Details (percentage + count) stacked -->
                                 <div class="flex flex-col items-end gap-0.5">
                                     <!-- Percentage (secondary primary) -->
-                                    <span class="text-sm font-medium text-muted-foreground">
-                                        {{ getCategoryPercentage(category.amount) }}%
+                                    <span
+                                        class="text-sm font-medium text-muted-foreground"
+                                    >
+                                        {{
+                                            getCategoryPercentage(
+                                                category.amount,
+                                            )
+                                        }}%
                                     </span>
                                     <!-- Transaction count (tertiary) -->
-                                    <span class="text-xs text-muted-foreground/70">
+                                    <span
+                                        class="text-xs text-muted-foreground/70"
+                                    >
                                         {{ category.transaction_count }}
                                         {{
                                             category.transaction_count === 1
@@ -144,15 +163,22 @@ const formatCurrency = (amount: number) => {
                         </div>
 
                         <!-- Progress bar -->
-                        <div class="h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                        <div
+                            class="h-2.5 w-full overflow-hidden rounded-full bg-muted"
+                        >
                             <div
                                 class="h-full rounded-full transition-all duration-300"
                                 :style="{
                                     width: `${getCategoryPercentage(category.amount)}%`,
-                                    backgroundColor: chartColors[index % chartColors.length],
+                                    backgroundColor:
+                                        chartColors[index % chartColors.length],
                                 }"
                                 role="progressbar"
-                                :aria-valuenow="Number(getCategoryPercentage(category.amount))"
+                                :aria-valuenow="
+                                    Number(
+                                        getCategoryPercentage(category.amount),
+                                    )
+                                "
                                 aria-valuemin="0"
                                 aria-valuemax="100"
                                 :aria-label="`${category.category} spending: ${getCategoryPercentage(category.amount)}%`"
@@ -174,8 +200,13 @@ const formatCurrency = (amount: number) => {
                     </div>
 
                     <!-- Category Count -->
-                    <div class="flex items-center justify-between text-xs text-muted-foreground">
-                        <span>{{ displayCategories.length }} categories shown</span>
+                    <div
+                        class="flex items-center justify-between text-xs text-muted-foreground"
+                    >
+                        <span
+                            >{{ displayCategories.length }} categories
+                            shown</span
+                        >
                         <span v-if="categoryData.length > 5">
                             ({{ categoryData.length - 5 }} grouped as "Other")
                         </span>
@@ -207,7 +238,9 @@ const formatCurrency = (amount: number) => {
                         <path d="m19 9-5 5-4-4-3 3" />
                     </svg>
                 </div>
-                <p class="text-sm font-medium text-foreground">No spending data yet</p>
+                <p class="text-sm font-medium text-foreground">
+                    No spending data yet
+                </p>
                 <p class="text-xs text-muted-foreground">
                     Start adding expenses to see your breakdown
                 </p>

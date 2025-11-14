@@ -52,11 +52,14 @@ const balanceDifference = computed(() => {
         <CardContent>
             <div class="space-y-3">
                 <div class="rounded-lg bg-muted/50 p-3">
-                    <p class="text-sm font-medium text-muted-foreground">Current Balance</p>
+                    <p class="text-sm font-medium text-muted-foreground">
+                        Current Balance
+                    </p>
                     <p
                         class="mt-1 text-2xl font-bold"
                         :class="{
-                            'text-red-600 dark:text-red-500': accountData.current_balance < 0,
+                            'text-red-600 dark:text-red-500':
+                                accountData.current_balance < 0,
                         }"
                     >
                         {{ formatCurrency(accountData.current_balance) }}
