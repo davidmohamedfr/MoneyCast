@@ -43,7 +43,7 @@ const validationSchema = toTypedSchema(transactionSchema);
 const defaultAccountId = computed(() => {
     if (props.transaction) return props.transaction.account_id;
     if (props.accounts.length === 1) return props.accounts[0].id;
-    return props.accounts[0]?.id;
+    return props.accounts.length > 0 ? props.accounts[0].id : null;
 });
 
 const { errors, defineField, handleSubmit, isSubmitting, values } = useForm({
@@ -185,14 +185,16 @@ const onSubmit = handleSubmit((values) => {
                 <div class="space-y-2">
                     <Label for="type">
                         Type
-                        <span class="text-destructive" aria-label="required">*</span>
+                        <span class="text-destructive" aria-label="required"
+                            >*</span
+                        >
                     </Label>
                     <select
                         id="type"
                         v-model="type"
                         v-bind="typeAttrs"
                         :disabled="isSubmitting"
-                        class="border-input focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none"
+                        class="flex h-9 w-full items-center rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50"
                     >
                         <option value="">Select type</option>
                         <option value="income">Income</option>
@@ -208,7 +210,9 @@ const onSubmit = handleSubmit((values) => {
                 <div class="space-y-2">
                     <Label for="amount">
                         Amount
-                        <span class="text-destructive" aria-label="required">*</span>
+                        <span class="text-destructive" aria-label="required"
+                            >*</span
+                        >
                     </Label>
                     <Input
                         id="amount"
@@ -231,7 +235,9 @@ const onSubmit = handleSubmit((values) => {
                 <div class="space-y-2">
                     <Label for="payee">
                         Payee
-                        <span class="text-destructive" aria-label="required">*</span>
+                        <span class="text-destructive" aria-label="required"
+                            >*</span
+                        >
                     </Label>
                     <Input
                         id="payee"
@@ -251,7 +257,9 @@ const onSubmit = handleSubmit((values) => {
                 <div class="space-y-2">
                     <Label for="date">
                         Date
-                        <span class="text-destructive" aria-label="required">*</span>
+                        <span class="text-destructive" aria-label="required"
+                            >*</span
+                        >
                     </Label>
                     <DatePicker
                         id="date"
@@ -317,9 +325,11 @@ const onSubmit = handleSubmit((values) => {
                             v-model="categoryId"
                             v-bind="categoryIdAttrs"
                             :disabled="isSubmitting"
-                            class="border-input focus-visible:border-ring focus-visible:ring-ring/50 flex h-9 w-full items-center rounded-md border bg-transparent px-3 py-2 text-sm shadow-xs outline-none"
+                            class="flex h-9 w-full items-center rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-xs outline-none focus-visible:border-ring focus-visible:ring-ring/50"
                         >
-                            <option :value="null">Select category (optional)</option>
+                            <option :value="null">
+                                Select category (optional)
+                            </option>
                             <option
                                 v-for="category in filteredCategories"
                                 :key="category.id"
