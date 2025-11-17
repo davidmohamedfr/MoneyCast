@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+# Docker Artisan wrapper script
+# Usage: ./dart <command> [arguments]
+# Example: ./dart migrate --force
+
+# Check if Docker is running
+if ! docker info > /dev/null 2>&1; then
+    echo "Error: Docker is not running"
+    exit 1
+fi
+
+# Check if app container is running
+if ! docker ps --format '{{.Names}}' | grep -q '^moneycast_app$'; then
+    echo "Error: moneycast_app container is not running"
+    echo "Start the services with: make up"
+    exit 1
+fi
+
+# Detect if running in interactive terminal
+if [ -t 0 ]; then
+    # Interactive mode (with TTY)
+    docker exec -it moneycast_app php artisan "$@"
+else
+    # Non-interactive mode (no TTY)
+    docker exec moneycast_app php artisan "$@"
+fi

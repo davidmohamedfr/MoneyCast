@@ -1,0 +1,126 @@
+.PHONY: help up down restart build logs ps shell artisan composer npm test clean install
+
+# Default target
+.DEFAULT_GOAL := help
+
+## help: Show this help message
+help:
+	@echo "Usage: make [target]"
+	@echo ""
+	@echo "Available targets:"
+	@grep -E '^## ' Makefile | sed 's/^## /  /'
+
+## up: Start all services in detached mode
+up:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+## down: Stop all services
+down:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down
+
+## restart: Restart all services
+restart: down up
+
+## build: Build or rebuild services
+build:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+
+## rebuild: Rebuild services without cache
+rebuild:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build --no-cache
+
+## logs: View logs from all services (use 'make logs-app' for specific service)
+logs:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f
+
+## logs-app: View Laravel app logs
+logs-app:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f app
+
+## logs-nginx: View nginx logs
+logs-nginx:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f nginx
+
+## logs-vite: View Vite dev server logs
+logs-vite:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml logs -f vite
+
+## ps: List all running services
+ps:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml ps
+
+## shell: Open bash shell in app container
+shell:
+	docker exec -it moneycast_app sh
+
+## artisan: Run artisan commands (use 'make artisan cmd="migrate"')
+artisan:
+	@./artisand $(cmd)
+
+## composer: Run composer commands (use 'make composer cmd="install"')
+composer:
+	docker exec moneycast_app composer $(cmd)
+
+## npm: Run npm commands (use 'make npm cmd="install"')
+npm:
+	docker exec moneycast_vite npm $(cmd)
+
+## test: Run tests
+test:
+	docker exec moneycast_app php artisan test
+
+## migrate: Run database migrations
+migrate:
+	@./artisand migrate
+
+## migrate-fresh: Drop all tables and re-run migrations
+migrate-fresh:
+	@./artisand migrate:fresh --seed
+
+## seed: Run database seeders
+seed:
+	@./artisand db:seed
+
+## cache-clear: Clear all caches
+cache-clear:
+	@./artisand cache:clear
+	@./artisand config:clear
+	@./artisand route:clear
+	@./artisand view:clear
+
+## optimize: Optimize the application
+optimize:
+	@./artisand config:cache
+	@./artisand route:cache
+	@./artisand view:cache
+
+## clean: Remove all containers, volumes, and images
+clean:
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v --remove-orphans
+
+## install: Initial setup - build, start services, install dependencies
+install:
+	@echo "Building services..."
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+	@echo "Starting services..."
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+	@echo "Waiting for services to be ready..."
+	@sleep 10
+	@echo "Installing composer dependencies..."
+	docker exec moneycast_app composer install
+	@echo "Running migrations..."
+	@./artisand migrate
+	@echo ""
+	@echo "✅ Installation complete!"
+	@echo ""
+	@echo "URLs:"
+	@echo "  - App:     http://moneycast.local"
+	@echo "  - Mailpit: http://mailpit.moneycast.local"
+	@echo "  - Vite:    http://vite.moneycast.local"
+	@echo ""
+	@echo "Make sure /etc/hosts contains:"
+	@echo "  127.0.0.1 moneycast.local mailpit.moneycast.local vite.moneycast.local"
+
+## hosts: Add local domains to /etc/hosts
+hosts:
+	@./docker/add-hosts.sh
