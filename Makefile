@@ -108,6 +108,8 @@ install:
 	@sleep 10
 	@echo "Installing composer dependencies..."
 	docker exec moneycast_app composer install
+	@echo "Setting artisand script executable..."
+	@chmod +x artisand
 	@echo "Running migrations..."
 	@./artisand migrate
 	@echo ""
