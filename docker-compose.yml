@@ -3,6 +3,8 @@ services:
     image: supabase/postgres:15.1.1.54
     container_name: moneycast_postgres
     restart: unless-stopped
+    # WARNING: Development-only credentials - NEVER use in production
+    # Override these in .env for production deployments
     environment:
       POSTGRES_DB: ${DB_DATABASE:-postgres}
       POSTGRES_USER: ${DB_USERNAME:-postgres}
@@ -15,7 +17,7 @@ services:
     networks:
       - moneycast
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-moneycast} -d ${DB_DATABASE:-moneycast}"]
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-postgres} -d ${DB_DATABASE:-postgres}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -38,6 +40,74 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
+
+  queue-worker:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moneycast_queue_worker
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan queue:work --queue=default --tries=3 --timeout=90
+    volumes:
+      - .:/var/www/html
+    networks:
+      - moneycast
+    depends_on:
+      app:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - DB_CONNECTION=${DB_CONNECTION:-pgsql}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-moneycast}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -q '[a]rtisan queue:work' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  queue-worker-high:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: moneycast_queue_worker_high
+    restart: unless-stopped
+    working_dir: /var/www/html
+    command: php artisan queue:work --queue=high --tries=3 --timeout=90
+    volumes:
+      - .:/var/www/html
+    networks:
+      - moneycast
+    depends_on:
+      app:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - DB_CONNECTION=${DB_CONNECTION:-pgsql}
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_DATABASE=${DB_DATABASE:-moneycast}
+      - DB_USERNAME=${DB_USERNAME:-postgres}
+      - DB_PASSWORD=${DB_PASSWORD:-postgres}
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    healthcheck:
+      test: ["CMD-SHELL", "ps aux | grep -q '[a]rtisan queue:work' || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
 
   app:
     build:
@@ -69,6 +139,25 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
+
+  nginx:
+    image: nginx:1.25-alpine
+    container_name: moneycast_nginx
+    restart: unless-stopped
+    ports:
+      - "${NGINX_HTTP_PORT:-80}:80"
+      - "${NGINX_HTTPS_PORT:-443}:443"
+    networks:
+      - moneycast
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
 
 volumes:
   postgres_data:
