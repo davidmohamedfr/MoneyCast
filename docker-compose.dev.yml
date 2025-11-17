@@ -32,6 +32,14 @@ services:
       - ./public:/var/www/html/public:ro
       - ./storage/logs/nginx:/var/log/nginx
 
+  queue-worker:
+    build:
+      dockerfile: Dockerfile.dev
+
+  queue-worker-high:
+    build:
+      dockerfile: Dockerfile.dev
+
   vite:
     image: node:24-alpine
     container_name: moneycast_vite
@@ -39,7 +47,7 @@ services:
     working_dir: /var/www/html
     volumes:
       - .:/var/www/html
-      - /var/www/html/node_modules
+      - vite_node_modules:/var/www/html/node_modules
     ports:
       - "${VITE_PORT:-5173}:5173"
     networks:
@@ -86,4 +94,6 @@ volumes:
   nginx_conf_dev:
     driver: local
   mailpit_data:
+    driver: local
+  vite_node_modules:
     driver: local
