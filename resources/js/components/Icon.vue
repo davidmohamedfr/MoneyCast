@@ -3,6 +3,10 @@ import { cn } from '@/lib/utils';
 import * as icons from 'lucide-vue-next';
 import { computed } from 'vue';
 
+defineOptions({
+    inheritAttrs: false,
+});
+
 interface Props {
     name: string;
     class?: string;
@@ -36,5 +40,6 @@ const icon = computed(() => {
         :size="size"
         :stroke-width="strokeWidth"
         :color="color"
+        v-bind="$attrs"
     />
 </template>

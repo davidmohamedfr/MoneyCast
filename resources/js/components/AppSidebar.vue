@@ -16,6 +16,7 @@ import { type NavItem } from '@/types';
 import { Link } from '@inertiajs/vue3';
 import {
     BookOpen,
+    FileUp,
     Folder,
     LayoutGrid,
     Plus,
@@ -39,6 +40,11 @@ const mainNavItems: NavItem[] = [
         title: 'Transactions',
         href: '/transactions',
         icon: Receipt,
+    },
+    {
+        title: 'Imports',
+        href: '/imports',
+        icon: FileUp,
     },
 ];
 
