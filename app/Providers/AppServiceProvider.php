@@ -10,6 +10,10 @@ use App\Domain\Category\Models\Category;
 use App\Domain\Category\Policies\CategoryPolicy;
 use App\Domain\Category\Repositories\CategoryRepository;
 use App\Domain\Category\Repositories\CategoryRepositoryInterface;
+use App\Domain\Import\Models\Import;
+use App\Domain\Import\Policies\ImportPolicy;
+use App\Domain\Import\Repositories\ImportRepository;
+use App\Domain\Import\Repositories\ImportRepositoryInterface;
 use App\Domain\Transaction\Models\Transaction;
 use App\Domain\Transaction\Policies\TransactionPolicy;
 use App\Domain\Transaction\Repositories\TransactionRepository;
@@ -32,6 +36,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(CategoryRepositoryInterface::class, CategoryRepository::class);
         $this->app->bind(AccountRepositoryInterface::class, AccountRepository::class);
         $this->app->bind(TransactionRepositoryInterface::class, TransactionRepository::class);
+        $this->app->bind(ImportRepositoryInterface::class, ImportRepository::class);
     }
 
     /**
@@ -42,6 +47,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Category::class, CategoryPolicy::class);
         Gate::policy(Account::class, AccountPolicy::class);
         Gate::policy(Transaction::class, TransactionPolicy::class);
+        Gate::policy(Import::class, ImportPolicy::class);
 
         // Register observers
         Account::observe(AccountObserver::class);
