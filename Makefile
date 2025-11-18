@@ -101,17 +101,19 @@ clean:
 ## install: Initial setup - build, start services, install dependencies
 install:
 	@echo "Building services..."
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml build
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml build || { echo "❌ Failed to build services"; exit 1; }
 	@echo "Starting services..."
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml up -d || { echo "❌ Failed to start services"; exit 1; }
 	@echo "Waiting for services to be ready..."
 	@sleep 10
 	@echo "Installing composer dependencies..."
-	docker exec moneycast_app composer install
+	docker exec moneycast_app composer install || { echo "❌ Failed to install composer dependencies"; exit 1; }
+	@echo "Installing npm dependencies and npx in app container..."
+	docker exec moneycast_app npm install -g npx concurrently || { echo "❌ Failed to install npx and concurrently in app container"; exit 1; }
 	@echo "Setting artisand script executable..."
 	@chmod +x artisand
 	@echo "Running migrations..."
-	@./artisand migrate
+	@./artisand migrate || { echo "❌ Failed to run migrations"; exit 1; }
 	@echo ""
 	@echo "✅ Installation complete!"
 	@echo ""
@@ -125,4 +127,4 @@ install:
 
 ## hosts: Add local domains to /etc/hosts
 hosts:
-	@./docker/add-hosts.sh
+	@./docker/add-hosts.sh || { echo "❌ Failed to update /etc/hosts"; exit 1; }
