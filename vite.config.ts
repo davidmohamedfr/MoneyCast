@@ -5,9 +5,14 @@ import laravel from 'laravel-vite-plugin';
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
+    // Use process.env for Docker compatibility, fallback to loadEnv for local dev
     const env = loadEnv(mode, process.cwd(), '');
-    const appUrl = env.APP_URL || 'http://localhost';
-    const viteDevServer = env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+    const appUrl = process.env.APP_URL || env.APP_URL || 'http://localhost';
+    const viteDevServer = process.env.VITE_DEV_SERVER_URL || env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+
+    // Extract hostname from URLs for CORS
+    const appHostname = new URL(appUrl).hostname;
+    const viteHostname = new URL(viteDevServer).hostname;
 
     return {
         plugins: [
@@ -44,7 +49,14 @@ export default defineConfig(({ mode }) => {
                 key: '/certs/moneycast.local-key.pem',
             },
             cors: {
-                origin: [appUrl, viteDevServer, 'http://localhost', 'https://localhost', 'https://moneycast.local', 'http://moneycast.local'],
+                origin: [
+                    appUrl,
+                    viteDevServer,
+                    `http://${appHostname}`,
+                    `https://${appHostname}`,
+                    `http://${viteHostname}`,
+                    `https://${viteHostname}`,
+                ],
                 credentials: true,
             },
         },
