@@ -60,7 +60,7 @@ services:
     container_name: moneycast_queue_worker
     restart: unless-stopped
     working_dir: /var/www/html
-    command: php artisan queue:work --queue=default --tries=3 --timeout=90
+    command: php artisan queue:work --queue=default --tries=3 --timeout=90 --max-jobs=1000 --max-time=3600
     networks:
       - moneycast
     depends_on:
@@ -92,7 +92,7 @@ services:
     container_name: moneycast_queue_worker_high
     restart: unless-stopped
     working_dir: /var/www/html
-    command: php artisan queue:work --queue=high --tries=3 --timeout=90
+    command: php artisan queue:work --queue=high --tries=3 --timeout=90 --max-jobs=1000 --max-time=3600
     networks:
       - moneycast
     depends_on:
