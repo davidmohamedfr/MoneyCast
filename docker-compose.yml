@@ -1,4 +1,16 @@
 services:
+  cert-generator:
+    build:
+      context: docker/mkcert
+      dockerfile: Dockerfile
+    container_name: moneycast_cert_generator
+    volumes:
+      - ssl_certs:/certs
+    networks:
+      - moneycast
+    profiles:
+      - https
+
   postgres:
     image: supabase/postgres:15.1.1.54
     container_name: moneycast_postgres
@@ -49,8 +61,6 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     command: php artisan queue:work --queue=default --tries=3 --timeout=90
-    volumes:
-      - .:/var/www/html
     networks:
       - moneycast
     depends_on:
@@ -83,8 +93,6 @@ services:
     restart: unless-stopped
     working_dir: /var/www/html
     command: php artisan queue:work --queue=high --tries=3 --timeout=90
-    volumes:
-      - .:/var/www/html
     networks:
       - moneycast
     depends_on:
@@ -122,6 +130,7 @@ services:
     environment:
       - APP_ENV=${APP_ENV:-production}
       - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_DEBUG:-false}
       - DB_HOST=postgres
       - DB_PORT=5432
       - REDIS_HOST=redis
@@ -140,6 +149,28 @@ services:
       retries: 3
       start_period: 40s
 
+  vite:
+    image: node:24-alpine
+    container_name: moneycast_vite
+    restart: unless-stopped
+    working_dir: /var/www/html
+    volumes:
+      - .:/var/www/html
+      - ssl_certs:/certs:ro
+    ports:
+      - "5173:5173"
+    networks:
+      - moneycast
+    depends_on:
+      cert-generator:
+        condition: service_completed_successfully
+    environment:
+      - NODE_ENV=development
+      - VITE_DEV_SERVER_URL=https://moneycast.local:5173
+    command: sh -c "rm -rf node_modules package-lock.json && npm install && npm run dev"
+    profiles:
+      - https
+
   nginx:
     image: nginx:1.25-alpine
     container_name: moneycast_nginx
@@ -147,6 +178,13 @@ services:
     ports:
       - "${NGINX_HTTP_PORT:-80}:80"
       - "${NGINX_HTTPS_PORT:-443}:443"
+    volumes:
+      - .:/var/www/html:ro
+      - ./docker/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./docker/nginx/conf.d/app-ssl.dev.conf:/etc/nginx/conf.d/app.conf:ro
+      - ./docker/nginx/conf.d/mailpit-ssl.dev.conf:/etc/nginx/conf.d/mailpit.conf:ro
+      - ./docker/nginx/conf.d/vite-ssl.dev.conf:/etc/nginx/conf.d/vite.conf:ro
+      - ssl_certs:/etc/nginx/certs:ro
     networks:
       - moneycast
     depends_on:
@@ -164,7 +202,7 @@ volumes:
     driver: local
   redis_data:
     driver: local
-  app_data:
+  ssl_certs:
     driver: local
 
 networks:
