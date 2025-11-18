@@ -31,5 +31,5 @@ yarn-error.log
 
 # Environment files (except examples)
 .env*
-\!.env.example
-\!.env*.example
+!.env.example
+!.env*.example
