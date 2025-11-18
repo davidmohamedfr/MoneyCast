@@ -9,6 +9,7 @@ export default defineConfig(({ mode }) => {
     const env = loadEnv(mode, process.cwd(), '');
     const appUrl = process.env.APP_URL || env.APP_URL || 'http://localhost';
     const viteDevServer = process.env.VITE_DEV_SERVER_URL || env.VITE_DEV_SERVER_URL || 'http://localhost:5173';
+    const viteHttps = process.env.VITE_HTTPS === 'true' || env.VITE_HTTPS === 'true';
 
     // Extract hostname from URLs for CORS
     const appHostname = new URL(appUrl).hostname;
@@ -44,10 +45,12 @@ export default defineConfig(({ mode }) => {
             strictPort: true,
             origin: viteDevServer,
             allowedHosts: true,
-            https: {
-                cert: '/certs/moneycast.local.pem',
-                key: '/certs/moneycast.local-key.pem',
-            },
+            ...(viteHttps && {
+                https: {
+                    cert: '/certs/moneycast.local.pem',
+                    key: '/certs/moneycast.local-key.pem',
+                },
+            }),
             cors: {
                 origin: [
                     appUrl,
