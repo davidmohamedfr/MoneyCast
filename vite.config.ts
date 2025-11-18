@@ -15,6 +15,8 @@ export default defineConfig(({ mode }) => {
                 input: ['resources/js/app.ts'],
                 ssr: 'resources/js/ssr.ts',
                 refresh: true,
+                devServerUrl: viteDevServer,
+                hotFile: 'public/hot',
             }),
             tailwindcss(),
             wayfinder({
@@ -37,8 +39,12 @@ export default defineConfig(({ mode }) => {
             strictPort: true,
             origin: viteDevServer,
             allowedHosts: true,
+            https: {
+                cert: '/certs/moneycast.local.pem',
+                key: '/certs/moneycast.local-key.pem',
+            },
             cors: {
-                origin: [appUrl, 'http://localhost'],
+                origin: [appUrl, viteDevServer, 'http://localhost', 'https://localhost', 'https://moneycast.local', 'http://moneycast.local'],
                 credentials: true,
             },
         },
