@@ -21,6 +21,8 @@ services:
     volumes:
       - .:/var/www/html
       - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   nginx:
     volumes:
@@ -36,10 +38,14 @@ services:
   queue-worker:
     build:
       dockerfile: Dockerfile.dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   queue-worker-high:
     build:
       dockerfile: Dockerfile.dev
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
 
   vite:
     image: node:24-alpine
