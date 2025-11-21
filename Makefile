@@ -100,6 +100,18 @@ clean:
 
 ## install: Initial setup - build, start services, install dependencies
 install:
+	@echo "Generating secure environment file..."
+	@if [ ! -f .env ]; then \
+		cp .env.dev.example .env; \
+		DB_PASS=$$(openssl rand -base64 24 | tr -d '/+=' | head -c 32); \
+		REDIS_PASS=$$(openssl rand -base64 24 | tr -d '/+=' | head -c 32); \
+		sed -i.bak "s/CHANGE_ME_GENERATE_RANDOM_PASSWORD/$$DB_PASS/1" .env; \
+		sed -i.bak "s/CHANGE_ME_GENERATE_RANDOM_PASSWORD/$$REDIS_PASS/2" .env; \
+		rm -f .env.bak; \
+		echo "✅ Generated random passwords for DB and Redis"; \
+	else \
+		echo "⚠️  .env already exists, skipping generation"; \
+	fi
 	@echo "Building services..."
 	docker compose -f docker-compose.yml -f docker-compose.dev.yml build || { echo "❌ Failed to build services"; exit 1; }
 	@echo "Starting services..."
@@ -108,6 +120,8 @@ install:
 	@sleep 10
 	@echo "Installing composer dependencies..."
 	docker exec moneycast_app composer install || { echo "❌ Failed to install composer dependencies"; exit 1; }
+	@echo "Generating application key..."
+	@./artisand key:generate || { echo "❌ Failed to generate APP_KEY"; exit 1; }
 	@echo "Installing npm dependencies and npx in app container..."
 	docker exec moneycast_app npm install -g npx concurrently || { echo "❌ Failed to install npx and concurrently in app container"; exit 1; }
 	@echo "Setting artisand script executable..."
