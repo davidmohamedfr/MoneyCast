@@ -44,7 +44,7 @@ export default defineConfig(({ mode }) => {
             port: 5173,
             strictPort: true,
             origin: viteDevServer,
-            allowedHosts: true,
+            allowedHosts: [appHostname, viteHostname, 'localhost', '127.0.0.1'],
             ...(viteHttps && {
                 https: {
                     cert: '/certs/moneycast.local.pem',

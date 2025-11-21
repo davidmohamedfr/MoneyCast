@@ -15,12 +15,11 @@ services:
     image: supabase/postgres:15.1.1.54
     container_name: moneycast_postgres
     restart: unless-stopped
-    # WARNING: Development-only credentials - NEVER use in production
-    # Override these in .env for production deployments
+    # SECURITY: Set these in .env file - no defaults for production safety
     environment:
-      POSTGRES_DB: ${DB_DATABASE:-postgres}
-      POSTGRES_USER: ${DB_USERNAME:-postgres}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_DATABASE:?DB_DATABASE required}
+      POSTGRES_USER: ${DB_USERNAME:?DB_USERNAME required}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD required}
       POSTGRES_PORT: 5432
     volumes:
       - postgres_data:/var/lib/postgresql/data
@@ -39,7 +38,7 @@ services:
     image: redis:7-alpine
     container_name: moneycast_redis
     restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-devpassword}
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:?REDIS_PASSWORD required}
     volumes:
       - redis_data:/data
     ports:
@@ -47,9 +46,9 @@ services:
     networks:
       - moneycast
     environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD:-devpassword}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:?REDIS_PASSWORD required}
     healthcheck:
-      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:-devpassword}", "ping"]
+      test: ["CMD", "redis-cli", "--no-auth-warning", "-a", "${REDIS_PASSWORD:?REDIS_PASSWORD required}", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
