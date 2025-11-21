@@ -19,11 +19,13 @@ class TrustProxies extends Middleware
      */
     public function __construct()
     {
-        // Trust all proxies in local/development environments
-        // In production, this should be set to specific proxy IPs or CIDR ranges
+        // Trust Docker internal networks and private IP ranges
+        // Docker default bridge: 172.17.0.0/16
+        // Docker user-defined networks: 172.16.0.0/12
+        // Private networks: 192.168.0.0/16, 10.0.0.0/8
         $this->proxies = config('app.env') === 'production'
-            ? null  // Trust no proxies by default in production
-            : '*';  // Trust all proxies in development (Docker nginx)
+            ? null  // Trust no proxies by default in production (must configure explicitly)
+            : ['172.16.0.0/12', '192.168.0.0/16', '10.0.0.0/8'];  // Docker + private networks
     }
 
     /**
