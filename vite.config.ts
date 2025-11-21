@@ -27,8 +27,7 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             wayfinder({
                 formVariants: true,
-                command:
-                    'echo "Skipping Wayfinder type generation - using pre-generated types from app container"',
+                command: false, // Skip type generation - using pre-generated types from app container
             }),
             vue({
                 template: {

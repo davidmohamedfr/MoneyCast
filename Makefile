@@ -1,4 +1,4 @@
-.PHONY: help up down restart build logs ps shell artisan composer npm test clean install
+.PHONY: help up down restart build logs ps shell artisan composer npm test clean clean-all install
 
 # Default target
 .DEFAULT_GOAL := help
@@ -94,9 +94,20 @@ optimize:
 	@./artisand route:cache
 	@./artisand view:cache
 
-## clean: Remove all containers, volumes, and images
+## clean: Stop and remove all containers (keeps volumes)
 clean:
-	docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v --remove-orphans
+	docker compose -f docker-compose.yml -f docker-compose.dev.yml down --remove-orphans
+
+## clean-all: Remove all containers, volumes, and orphans (DESTRUCTIVE)
+clean-all:
+	@echo "⚠️  WARNING: This will DELETE all volumes including databases!"
+	@read -p "Are you sure? [y/N] " -n 1 -r; \
+	echo; \
+	if [[ $$REPLY =~ ^[Yy]$$ ]]; then \
+		docker compose -f docker-compose.yml -f docker-compose.dev.yml down -v --remove-orphans; \
+	else \
+		echo "Aborted."; \
+	fi
 
 ## install: Initial setup - build, start services, install dependencies
 install:
