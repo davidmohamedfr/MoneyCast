@@ -9,7 +9,7 @@ uses(RefreshDatabase::class);
 test('user can create account with initial balance', function () {
     $user = User::factory()->create();
 
-    $response = $this->actingAs($user)->withoutMiddleware(\App\Http\Middleware\VerifyCsrfToken::class)->post(route('accounts.store'), [
+    $response = $this->actingAs($user)->post(route('accounts.store'), [
         'name' => 'Checking Account',
         'initial_balance' => 1000.00,
         'type' => 'checking',

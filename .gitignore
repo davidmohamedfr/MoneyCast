@@ -31,6 +31,5 @@ yarn-error.log
 
 # Environment files (except examples)
 .env*
-!.env.example
-!.env*.example
-ssl_certs/
+\!.env.example
+\!.env*.example
