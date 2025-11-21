@@ -38,12 +38,18 @@ services:
   queue-worker:
     build:
       dockerfile: Dockerfile.dev
+    volumes:
+      - .:/var/www/html
+      - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
   queue-worker-high:
     build:
       dockerfile: Dockerfile.dev
+    volumes:
+      - .:/var/www/html
+      - ./docker/php/xdebug.ini:/usr/local/etc/php/conf.d/xdebug.ini
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -104,4 +110,6 @@ volumes:
   mailpit_data:
     driver: local
   vite_node_modules:
+    driver: local
+  ssl_certs:
     driver: local

@@ -26,10 +26,6 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->priority([
             TrustProxies::class,
         ]);
-
-        $middleware->use([
-            TrustProxies::class,
-        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
