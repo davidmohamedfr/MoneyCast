@@ -1,0 +1,62 @@
+# Version Control
+.git
+.gitignore
+.gitattributes
+
+# CI/CD
+.github
+
+# Dependencies (will be installed in container)
+node_modules
+vendor
+
+# Testing
+tests
+.phpunit.result.cache
+coverage
+
+# Development Tools
+.vscode
+.idea
+*.swp
+*.swo
+*~
+
+# Documentation
+*.md
+!README.md
+docs
+
+# Environment Files (use .env.example instead)
+.env
+.env.*
+!.env.example
+!.env.*.example
+
+# Storage (not needed in image)
+storage/logs/*.log
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/testing/*
+storage/framework/views/*
+
+# Build artifacts
+public/hot
+public/build
+public/storage
+bootstrap/cache/*.php
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose*.yml
+Dockerfile*
+.dockerignore
+
+# Other
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
