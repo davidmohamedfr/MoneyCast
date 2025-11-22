@@ -27,7 +27,7 @@ export default defineConfig(({ mode }) => {
             tailwindcss(),
             wayfinder({
                 formVariants: true,
-                command: false, // Skip type generation - using pre-generated types from app container
+                command: 'php artisan wayfinder:generate --with-form',
             }),
             vue({
                 template: {
@@ -42,14 +42,20 @@ export default defineConfig(({ mode }) => {
             host: '0.0.0.0',
             port: 5173,
             strictPort: true,
-            origin: viteDevServer,
+            origin: appUrl, // Use main app URL for origin
             allowedHosts: [appHostname, viteHostname, 'localhost', '127.0.0.1'],
-            ...(viteHttps && {
-                https: {
-                    cert: '/certs/moneycast.local.pem',
-                    key: '/certs/moneycast.local-key.pem',
-                },
-            }),
+            // HMR configuration for Warden/Traefik proxy
+            hmr: {
+                protocol: 'wss',   // WebSocket Secure through Traefik
+                host: appHostname, // Use main app hostname (moneycast.local)
+                clientPort: 443,   // Traefik HTTPS port
+                path: '/@vite/hmr', // Explicit HMR path
+            },
+            // Watch configuration for Docker volumes
+            watch: {
+                usePolling: true,
+                interval: 1000,
+            },
             cors: {
                 origin: [
                     appUrl,
